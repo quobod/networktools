@@ -31,7 +31,7 @@ def connect(username=None, password=None, address=None, port=None):
 
         s.close()
 
-        if str(data).strip() == "238":
+        if str(data).strip() == "230":
             return {"status": True, "password": password}
         return {"status": False, "data": data}
 

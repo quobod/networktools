@@ -13,4 +13,4 @@ def random_mac():
 
 
 def mac_pretty_print(mac):
-    return ":".join(map(lambda x: "%02x" % mac))
+    return ":".join(map(lambda x: "%02x" % x, mac))

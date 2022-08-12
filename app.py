@@ -17,5 +17,7 @@ if filtered_count == 5:
     seq = int(filtered[2])
     sport = int(filtered[3])
     dport = int(filtered[4])
-
-    spoof(src, tgt, seq, sport, dport)
+    try:
+        spoof(src, tgt, seq, sport, dport)
+    except Exception as ve:
+        print(ve)

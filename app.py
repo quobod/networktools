@@ -6,8 +6,16 @@ from custom_modules.MacGenerator import (
     random_mac as make_mac,
     mac_pretty_print as pretty,
 )
+from custom_modules.IPSpoofer import spoof_conn as spoof
 
 mac = make_mac()
 p_mac = pretty(mac)
 
-print("MAC: \t\t{}\nPretty MAC:\t\t{}".format(mac, p_mac))
+if filtered_count == 5:
+    src = filtered[0]
+    tgt = filtered[1]
+    seq = int(filtered[2])
+    sport = int(filtered[3])
+    dport = int(filtered[4])
+
+    spoof(src, tgt, seq, sport, dport)

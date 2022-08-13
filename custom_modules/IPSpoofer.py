@@ -1,5 +1,8 @@
 from scapy.all import *
+import re
 from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
+from custom_modules.PatternConstants import valid_ipv4 as vip4
+from custom_modules.Utils import non_none_value
 
 """ 
     src:    192.168.1.212       Spoof IP 
@@ -10,11 +13,45 @@ from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
 
 
 def spoof_conn(src=None, tgt=None, ack=None, sport=None, dport=None):
-    results = args_valid(src, tgt, ack, sport, dport)
+    results = non_none_value(src, tgt, ack, sport, dport)
     status = results["status"]
+    valid_src = vip4(src)
+    valid_tgt = vip4(tgt)
     cus = cms["custom"]
 
+    if not valid_src:
+        e = cus(255, 65, 65, "Error:")
+        msg = cus(
+            255,
+            255,
+            255,
+            "Expected a valid IPv4 source address but received: [{}]".format(src),
+        )
+        e_msg = "{}\t{}".format(e, msg)
+        raise ValueError(e_msg)
+
+    if not valid_tgt:
+        e = cus(255, 65, 65, "Error:")
+        msg = cus(
+            255,
+            255,
+            255,
+            "Expected a valid IPv4 target address but received: [{}]".format(tgt),
+        )
+        e_msg = "{}\t{}".format(e, msg)
+        raise ValueError(e_msg)
+
     if status:
+        try:
+            sport = int(sport)
+            dport = int(dport)
+            ack = int(ack)
+        except ValueError as ver:
+            e = cus(255, 65, 65, "Error:")
+            msg = cus(255, 255, 255, "{}".format(ver))
+            e_msg = "{}\t{}".format(e, msg)
+            raise ValueError(e_msg)
+
         ip_layer = IP(src=src, dst=tgt)
         tcp_layer = TCP(sport=sport, dport=dport)
         syn_pkt = ip_layer / tcp_layer
@@ -40,18 +77,3 @@ def spoof_conn(src=None, tgt=None, ack=None, sport=None, dport=None):
         msg = cus(255, 255, 255, "Expected 5 arguments but received [{}]".format(line))
         e_msg = "{}\t{}".format(e, msg)
         raise ValueError(e_msg)
-
-
-def args_valid(*args):
-    errors = []
-
-    for a in args:
-        if a == None:
-            errors.append({"{}".format(a): "Nonne"})
-        else:
-            continue
-
-    if len(errors) > 0:
-        return {"status": True}
-    else:
-        return {"status": False, "errors": errors}

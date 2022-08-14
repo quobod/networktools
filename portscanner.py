@@ -3,8 +3,8 @@
 import argparse
 import os
 from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
-from custom_modules.PortScanner import is_port_open as ipo
-from custom_modules.NmapPortScanner import is_port_open as nmap
+from custom_modules.PortScanner import is_port_open_thread as ipot
+from custom_modules.NmapPortScanner import is_port_open_thread as nmap
 from custom_modules.LocalConfigParser import return_route
 from custom_modules.PortScannerResultsHandler import (
     handle_results as handler,
@@ -146,7 +146,7 @@ def run_verbose_mode(cust, args):
         data.append("{}{}{}".format(cus_msg_host, cus_msg_ports, lsep))
 
         for port in ports:
-            port_open = ipo(host, port, verbose, timeout)
+            port_open = ipot(host, port, verbose, timeout)
             if port_open:
                 msg_port_open = "Port {} is open".format(port)
                 cus_msg_port_open = cus(255, 255, 255, msg_port_open)
@@ -166,7 +166,7 @@ def run_verbose_mode(cust, args):
         print("{}{}\n".format(cus_msg_host, cus_msg_port))
         data.append("{}{}{}".format(cus_msg_host, cus_msg_port, lsep))
 
-        port_open = ipo(host, sport, verbose, timeout)
+        port_open = ipot(host, sport, verbose, timeout)
 
         if port_open:
             msg_port_open = "Port {} is open".format(sport)
@@ -226,14 +226,14 @@ def run_default_mode(cus, args):
     if port_range:
 
         for port in ports:
-            port_open = ipo(host, port, verbose, timeout)
+            port_open = ipot(host, port, verbose, timeout)
             if port_open:
                 msg_port_open = "Port {} is open".format(port)
                 cus_msg_port_open = cus(255, 255, 255, msg_port_open)
                 print("{}".format(cus_msg_port_open))
                 data.append("{}{}".format(cus_msg_port_open, lsep))
     else:
-        port_open = ipo(host, sport, verbose, timeout)
+        port_open = ipot(host, sport, verbose, timeout)
 
         if port_open:
             msg_port_open = "Port {} is open".format(sport)

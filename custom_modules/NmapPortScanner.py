@@ -1,4 +1,5 @@
 import nmap
+from multiprocessing.pool import ThreadPool
 from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
 from custom_modules.TypeTester import (
     arg_is_a_string,
@@ -43,3 +44,9 @@ def is_port_open(host=None, port=None):
             host, port
         )
         raise ValueError(message)
+
+
+def is_port_open_thread(host, port):
+    pool = ThreadPool(processes=3)
+    async_result = pool.apply_async(is_port_open, (host, port))
+    return async_result.get()

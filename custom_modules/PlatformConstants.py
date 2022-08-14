@@ -13,6 +13,7 @@ PATH_SEP = os.pathsep
 DEF_PATH = os.defpath
 LINE_SEP = os.linesep
 DEV_NULL = os.devnull
+USER_DIR = os.environ["HOME"]
 
 
 # os methods

@@ -1,22 +1,24 @@
 #! /usr/bin/python3
 
 import argparse
+from ast import arguments
 import re
 import os
 import sys
 from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
-from custom_modules.PatternConstants import IP4, IPv4, IPv4_network
+from custom_modules.PatternConstants import valid_ipv4, valid_network_range, has_ext
+from custom_modules.PlatformConstants import SEP as psep, USER_DIR as udir
+from custom_modules.FileOperator import write_dataframe_to_file
 from custom_modules.LocalConfigParser import (
-    return_arp_results as rar,
-    return_gateway_addr,
-    return_local_ip_address,
-    return_local_ip_address_by_name,
-    return_local_mac_address,
-    return_local_mac_address_by_iface_name,
-    return_local_route,
-    return_mac_by_ip_address,
-    return_route,
+    print_routing_table as prt,
+    get_routing_table as grt,
+    print_network_interface_name as pnin,
+    get_network_interface_name as gnin,
 )
+
+_verbose = False
+_save = False
+cus = cms["custom"]
 
 
 def error_handler(*args):
@@ -37,57 +39,6 @@ def warning_handler(*args):
 
 desc = "A tool that displays and can print reports about the hosts connected to the network."
 epil = "This program needs adminstrative access to perform many, if not, all of it's tasks."
-console_width_size = os.get_terminal_size(sys.__stderr__.fileno())[0]
-warning_message = (
-    "*" * 28
-    + "\n|"
-    + " " * 7
-    + "Warning"
-    + " " * 12
-    + "|\n|"
-    + " " * 26
-    + "|\n"
-    + "*" * 28
-    + "\nThis program need admin access\n"
-)
-if_name, if_addr, gateway = return_route()
-cus = cms["custom"]
-msg = None
-match = None
-
-
-def print_local_route():
-    msg = cms["custom"]
-    local_route = return_route()
-    dash = msg(245, 220, 199, "-")
-    title = msg(200, 255, 200, "Local network interface")
-    print(
-        "{}\n".format(title)
-        + " {}".format(msg(255, 255, 255, "Name"))
-        + " " * 5
-        + "\t  {}".format(msg(255, 255, 255, "Address"))
-        + " " * 5
-        + "\t\t {}".format(msg(255, 255, 255, "Gateway"))
-    )
-    print(dash * 29)
-    print(*local_route, sep="\t\t")
-    print("\n")
-
-
-def print_local_mac():
-    msg = cms["custom"]
-    local_mac = return_local_mac_address()
-    dash = msg(245, 220, 199, "-")
-    title = msg(200, 255, 200, "Local network interface hardware address")
-    print(
-        "{}\n".format(title)
-        + " {}".format(msg(255, 255, 255, "Name"))
-        + " " * 5
-        + "\t  {}".format(msg(255, 255, 255, "MAC"))
-    )
-    print(dash * 21)
-    print("{}\t\t{}".format(if_name, local_mac))
-    print("\n")
 
 
 parser = argparse.ArgumentParser(description=desc, epilog=epil)
@@ -107,123 +58,72 @@ group.add_argument(
     help="Increase output verbosity",
 )
 
-# Run silently
-group.add_argument(
-    "-q",
-    "--quiet",
-    dest="verbose",
-    action="store_false",
-    help="Silently run program. Runs with the arp command.",
-)
 
 """ positional arguments """
 
-# Print local routing table
-parser.add_argument(
-    "-l", "--local", action="store_true", dest="local", help="Print local routing table"
-)
+# Print info to the console
+parser.add_argument("-s", "--save", help="Save output to file", action="store_true")
 
-# Print gateway address
-parser.add_argument(
-    "-g", "--gateway", action="store_true", dest="gateway", help="Print gateway address"
-)
+parser.add_argument("-r", "--route", help="Print routing info", action="store_true")
 
-# Run program
-parser.add_argument(
-    "-a",
-    "--arp",
-    help="ARP to host or network e.g. --arp 192.167.45.3 or --arp 10.1.10.1/8.",
-)
-
-# Set timeout. Works with the arp command
-parser.add_argument(
-    "-t",
-    "--timeout",
-    help="Set the number of seconds to give up. Works with the arp command.",
-    type=int,
-)
-
-# Update system cache. Works with the arp command
-parser.add_argument(
-    "-c",
-    "--cache",
-    action="store_true",
-    help="Whether or not to refresh system's arp cache.",
-)
-
-# Print report. Works with the arp command
-parser.add_argument(
-    "-r",
-    "--report",
-    action="store_true",
-    help="Print results to a text file. Defaults to no. Works with the arp command.",
-)
-
-# Print network interface hardware address
-parser.add_argument(
-    "-m",
-    "--mac",
-    action="store_true",
-    dest="mac",
-    help="Print local iface hardware address",
-)
-
-# parse arguments
 args = parser.parse_args()
-
-if not os.geteuid() == 0:
-    warning_handler(warning_message)
-
-""" ARP Request  """
-_target = "{}/24".format(gateway)
-_timeout = None
-_cache = None
-_verbose = None
-_report = None
-
-
-if args.arp:
-    _target = args.arp
-
-if args.timeout:
-    _timeout = args.timeout
 
 if args.verbose:
     _verbose = True
-else:
-    _verbose = False
 
-if args.cache:
-    _cache = True
+if args.save:
+    _save = True
 
-if args.report:
-    _report = True
-
-# print("Target,  Timeout,  Cache,  Verbose,  Report")
-# print("{}  {}  {}  {}  {}".format(_target, _timeout, _cache, _verbose, _report))
-
-if _verbose:
-    print("Arping\n\tTarget\t\t\tTimeout\t\tCache\t\tVerbose\t\tReport")
-    print(
-        "\t{}\t\t{}\t\t{}\t\t{}\t\t{}".format(
-            _target, _timeout, _cache, _verbose, _report
-        )
+if args.route:
+    data = grt()
+    file_path = "{}{}Documents{}prog-data{}routing_table.txt".format(
+        udir, psep, psep, psep
     )
 
-rar(_target, _timeout, _cache, _verbose, _report)
+    if _verbose:
+        if _save:
+            _title = "Routing info"
+            c_title = cus(255, 255, 255, _title)
+            print("\t\t{}\n".format(c_title))
+            print("{}\n".format(data))
 
+            _action = "... Saving to file"
+            c_action = cus(255, 255, 255, _action)
+            print("\t\t{}\n".format(c_action))
+            success = write_dataframe_to_file(file_path, data)
 
-""" Gateway Request """
-if args.gateway:
-    gwa = return_gateway_addr()
-    print("Gateway: {}".format(gwa))
+            if success:
+                _action_success = "Info saved to file"
+                c_action_success = cus(90, 255, 90, _action_success)
+                print("\t\t{}\n".format(c_action_success))
+            else:
+                _action_failure = "Error saving to file"
+                c_action_failure = cus(255, 90, 90, _action_failure)
+                print("\t\t{}\n".format(c_action_failure))
+        else:
+            _title = "Routing info"
+            c_title = cus(255, 255, 255, _title)
 
+            print("\t\t{}\n".format(c_title))
+            print("{}\n".format(data))
+    else:
+        if _save:
+            # Save output to file
+            success = write_dataframe_to_file(file_path, data)
 
-""" Local Route Request """
-if args.local:
-    print_local_route()
+            _title = "Routing info"
+            c_title = cus(255, 255, 255, _title)
 
+            print("\t\t{}\n".format(c_title))
+            print("{}\n".format(data))
 
-""" Iface Hardware Address Request  """
-if args.mac:
-    print_local_mac()
+            if not success:
+                _action_failure = "Error saving to file"
+                c_action_failure = cus(255, 90, 90, _action_failure)
+                print("\n\t\t{}\n".format(c_action_failure))
+        else:
+            _title = "Routing info"
+            c_title = cus(255, 255, 255, _title)
+
+            print("\t\t{}\n".format(c_title))
+            print("{}\n".format(data))

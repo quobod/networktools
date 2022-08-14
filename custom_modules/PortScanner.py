@@ -1,6 +1,7 @@
 #! /usr/bin/python3
 
 from ast import Param
+from multiprocessing.pool import ThreadPool
 import socket
 
 from paramiko import HostKeys  # for connecting
@@ -37,3 +38,9 @@ def is_port_open(host, port, verbose=False, timeout=None):
                 print(line)
 
             return False
+
+
+def is_port_open_thread(host, port, verbose=None, timeout=None):
+    pool = ThreadPool(processes=3)
+    async_result = pool.apply_async(is_port_open, (host, port, verbose, timeout))
+    return async_result.get()

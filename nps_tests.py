@@ -5,7 +5,7 @@ import sys
 import re
 from custom_modules.NmapPortScanner import is_port_open as ipo
 from custom_modules.ArgumentManager import filtered, filtered_count
-from custom_modules.PatternConstants import FILE_EXTENSION as fe
+from custom_modules.PatternConstants import has_ext as fe
 
 TITLE = "NmapPortScanner tests"
 

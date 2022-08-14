@@ -15,7 +15,9 @@ def success(arg=""):
 
 
 def custom(r, g, b, text):
-    return "\033[38;2;{};{};{}m{} \033[38;1;255;255;255m".format(r, g, b, text.strip())
+    return "\033[38;2;{};{};{}m{} \033[38;1;255;255;255m".format(
+        r, g, b, str(text).strip()
+    )
 
 
 CONSOLE_MESSENGER_SWITCH = {

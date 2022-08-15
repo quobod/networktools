@@ -8,7 +8,7 @@ import sys
 from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
 from custom_modules.PatternConstants import valid_ipv4, valid_network_range, has_ext
 from custom_modules.PlatformConstants import SEP as psep, USER_DIR as udir
-from custom_modules.FileOperator import write_dataframe_to_file
+from custom_modules.FileOperator import write_dataframe_to_file, write_to_file as wtf
 from custom_modules.LocalConfigParser import (
     print_routing_table as prt,
     get_routing_table as grt,
@@ -23,9 +23,11 @@ cus = cms["custom"]
 
 def error_handler(*args):
     cus = cms["custom"]
-    arg = args[0]
-    cargs = cus(254, 64, 4, arg)
-    print("{}".format(cargs))
+
+    for a in args:
+        cargs = cus(254, 64, 74, a)
+        print("{}\n".format(cargs))
+
     sys.exit(os.EX_USAGE)
 
 
@@ -61,10 +63,19 @@ group.add_argument(
 
 """ positional arguments """
 
-# Print info to the console
+# Saves output to file in the user's home dir
 parser.add_argument("-s", "--save", help="Save output to file", action="store_true")
 
+# Print info to the console
 parser.add_argument("-r", "--route", help="Print routing info", action="store_true")
+
+# Prints the local network interfae name
+parser.add_argument(
+    "-n",
+    "--name",
+    help="Prints the name of local network interface",
+    action="store_true",
+)
 
 args = parser.parse_args()
 
@@ -127,3 +138,46 @@ if args.route:
 
             print("\t\t{}\n".format(c_title))
             print("{}\n".format(data))
+
+if args.name:
+    data = gnin()
+
+    if _verbose:
+        _title = "Network Interface Name"
+        c_title = cus(255, 255, 255, _title)
+
+        print("\t\t{}\n".format(c_title))
+        print("{}\n".format(data))
+
+        if args.save:
+            print("... Saving info to file\n")
+
+            file_path = "{}{}Documents{}prog-data{}local-netface-name.txt".format(
+                udir, psep, psep, psep
+            )
+
+            success = wtf(file_path, data)
+
+        if success:
+            _action_success = "Successfully saved info the file"
+            c_action_success = cus(88, 255, 88, _action_success)
+            print("{}\n".format(c_action_success))
+        else:
+            _action_failure = "Error saving to file"
+            c_action_failure = cus(255, 90, 90, _action_failure)
+            print("\n\t\t{}\n".format(c_action_failure))
+    else:
+        c_data = cus(255, 255, 255, data)
+        print("{}\n".format(c_data))
+
+        if args.save:
+            file_path = "{}{}Documents{}prog-data{}local-netface-name.txt".format(
+                udir, psep, psep, psep
+            )
+
+            success = wtf(file_path, data)
+
+            if not success:
+                _action_failure = "Error saving to file"
+                c_action_failure = cus(255, 90, 90, _action_failure)
+                print("\n\t\t{}\n".format(c_action_failure))

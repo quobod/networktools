@@ -40,3 +40,18 @@ def write_dataframe_to_file(file_path, _data):
     else:
         _data.to_csv(file_path)
         return fileExists(file_path)
+
+
+def write_to_file(file_path, _data):
+    if fileExists(file_path):
+        deleted = delete_file(file_path)
+
+        if deleted:
+            with open(file_path, "w") as f:
+                f.write(_data)
+
+    else:
+        with open(file_path, "w") as f:
+            f.write(_data)
+
+    return fileExists(file_path)

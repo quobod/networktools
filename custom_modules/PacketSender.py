@@ -88,13 +88,17 @@ def send_pkt(host=None, port=None, flag=None, timeout=None):
         # return
 
     elif tcp_connect_scan_resp.haslayer(TCP):
-        print("Layer: {}".format(tcp_connect_scan_resp.getlayer(TCP).flags))
         if tcp_connect_scan_resp.getlayer(TCP).flags == 0x12:
+            print("TCP Flags: {}".format(tcp_connect_scan_resp.getlayer(TCP).flags))
+
             send_rst = sr(
                 IP(dst=_host) / TCP(sport=_src_port, dport=_port, flags="AR"),
                 timeout=_timeout,
             )
-            print("Open")
+
+            print("Port {} is open".format(_port))
         elif tcp_connect_scan_resp.getlayer(TCP).flags == 0x12:
-            print("Closed")
+            print("Port {} is closed".format(_port))
             # return
+        else:
+            print("Port {} is closed".format(_port))

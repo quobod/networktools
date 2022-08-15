@@ -5,7 +5,13 @@ from scapy.all import *
 from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
 from custom_modules.Flags import FLAGS as flags
 from custom_modules.PatternConstants import valid_ipv4 as vip4
-from custom_modules.TypeTester import arg_is_an_int as aiai, arg_is_none as ain
+from custom_modules.TypeTester import (
+    arg_is_an_int as aiai,
+    arg_is_none as ain,
+    arg_is_a_dict as aiad,
+    arg_is_a_tuple as aiat,
+    arg_is_a_list as aial,
+)
 
 
 logging.basicConfig(filemode="scapy-info-log", level=logging.INFO)
@@ -17,7 +23,7 @@ cus = cms["custom"]
 
 
 def send_pkt(host=None, port=None, flag=None, timeout=None):
-    logging.info("Method scan_port called\n")
+    logging.info("Method send_pkt called\n")
     _host = None
     _port = None
     _flag = None
@@ -84,17 +90,29 @@ def send_pkt(host=None, port=None, flag=None, timeout=None):
     if ain(tcp_connect_scan_resp):
         print("Closed")
 
-    elif tcp_connect_scan_resp.haslayer(TCP):
-        if tcp_connect_scan_resp.getlayer(TCP).flags == 0x12:
-            print("TCP Flags: {}".format(tcp_connect_scan_resp.getlayer(TCP).flags))
+    elif not ain(tcp_connect_scan_resp):
+        print("\n\n{}\n\n".format(tcp_connect_scan_resp))
 
-            send_rst = sr(
-                IP(dst=_host) / TCP(sport=_src_port, dport=_port, flags="AR"),
-                timeout=_timeout,
-            )
+        # if tcp_connect_scan_resp.getlayer(IP):
+        # print("IP Layer: {}".format(tcp_connect_scan_resp.getlayer(IP)))
 
-            print("Port {} is open".format(_port))
-        elif tcp_connect_scan_resp.getlayer(TCP).flags == 0x12:
-            print("Port {} is closed".format(_port))
-        else:
-            print("Port {} is closed".format(_port))
+        if tcp_connect_scan_resp.haslayer(TCP):
+            # print("TCP Layer: {}".format(tcp_connect_scan_resp.getlayer(TCP)))
+
+            if tcp_connect_scan_resp.getlayer(TCP).flags == 0x12:
+                print("TCP Flags: {}".format(tcp_connect_scan_resp.getlayer(TCP).flags))
+
+                send_rst = sr(
+                    IP(dst=_host) / TCP(sport=_src_port, dport=_port, flags="AR"),
+                    timeout=_timeout,
+                )
+
+                print(send_rst)
+
+                print("Port {} is open".format(_port))
+                return True
+            elif tcp_connect_scan_resp.getlayer(TCP).flags == 0x14:
+                print("Port {} is closed off".format(_port))
+            else:
+                print("Port {} is closed".format(_port))
+    return False

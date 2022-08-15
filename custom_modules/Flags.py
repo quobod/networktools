@@ -1,4 +1,13 @@
 SYN_FLAG = "S"
 ACK_FLAG = "A"
 RST_FLAG = "R"
-FLAGS = {"s": SYN_FLAG, "a": ACK_FLAG, "r": RST_FLAG}
+ACK_RST_FLAG = "AR"
+SYN_ACK_FLAG = "SA"
+
+FLAGS = {
+    "s": SYN_FLAG,
+    "a": ACK_FLAG,
+    "r": RST_FLAG,
+    "ar": ACK_RST_FLAG,
+    "sa": SYN_ACK_FLAG,
+}

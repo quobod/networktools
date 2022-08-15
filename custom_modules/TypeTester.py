@@ -37,4 +37,8 @@ def arg_is_a_float(port_start_range):
 
 
 def arg_is_none(arg):
+    return str(type(arg)) == "<class 'NoneType'>"
+
+
+def arg_is_null(arg):
     return arg.empty or arg == None

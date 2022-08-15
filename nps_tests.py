@@ -7,7 +7,7 @@ from custom_modules.NmapPortScanner import is_port_open as ipo
 from custom_modules.ArgumentManager import filtered, filtered_count
 from custom_modules.PatternConstants import has_ext as fe
 
-TITLE = "NmapPortScanner tests"
+TITLE = "Nmap Port Scanner Tests"
 
 host = "192.168.1.1"
 hosts = "192.168.1.0/24"

@@ -81,11 +81,8 @@ def send_pkt(host=None, port=None, flag=None, timeout=None):
         timeout=_timeout,
     )
 
-    # print(tcp_connect_scan_resp.getlayer(TCP).flags)
-
     if ain(tcp_connect_scan_resp):
         print("Closed")
-        # return
 
     elif tcp_connect_scan_resp.haslayer(TCP):
         if tcp_connect_scan_resp.getlayer(TCP).flags == 0x12:
@@ -99,6 +96,5 @@ def send_pkt(host=None, port=None, flag=None, timeout=None):
             print("Port {} is open".format(_port))
         elif tcp_connect_scan_resp.getlayer(TCP).flags == 0x12:
             print("Port {} is closed".format(_port))
-            # return
         else:
             print("Port {} is closed".format(_port))

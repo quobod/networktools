@@ -142,7 +142,7 @@ def run_verbose_mode(cust, args):
         cus_msg_host = cus(170, 170, 255, msg_host)
         msg_ports = "Ports: {}-{}".format(sport, eport)
         cus_msg_ports = cus(200, 200, 245, msg_ports)
-        print("{}{}\n".format(cus_msg_host, cus_msg_ports))
+        print("{}{}{}".format(cus_msg_host, cus_msg_ports, lsep))
         data.append("{}{}{}".format(cus_msg_host, cus_msg_ports, lsep))
 
         for port in ports:
@@ -163,7 +163,7 @@ def run_verbose_mode(cust, args):
         cus_msg_host = cus(170, 170, 255, msg_host)
         msg_port = "Port: {}".format(sport)
         cus_msg_port = cus(200, 200, 245, msg_port)
-        print("{}{}\n".format(cus_msg_host, cus_msg_port))
+        print("{}{}{}".format(cus_msg_host, cus_msg_port, lsep))
         data.append("{}{}{}".format(cus_msg_host, cus_msg_port, lsep))
 
         port_open = ipot(host, sport, verbose, timeout)

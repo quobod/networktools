@@ -8,16 +8,18 @@ import sys
 from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
 from custom_modules.PatternConstants import valid_ipv4, valid_network_range, has_ext
 from custom_modules.PlatformConstants import SEP as psep, USER_DIR as udir
-from custom_modules.FileOperator import write_dataframe_to_file, write_to_file as wtf
+from custom_modules.FileOperator import write_to_file as wtf
 from custom_modules.LocalConfigParser import (
     print_routing_table as prt,
     get_routing_table as grt,
     print_network_interface_name as pnin,
     get_network_interface_name as gnin,
+    get_network_interface_hardware_address as gniha,
 )
 
 _verbose = False
 _save = False
+_list = False
 cus = cms["custom"]
 
 
@@ -51,17 +53,12 @@ parser.error = error_handler
 
 group = parser.add_mutually_exclusive_group()
 
-# Increase verbosity
 group.add_argument(
-    "-v",
-    "--verbose",
-    dest="verbose",
-    action="store_true",
-    help="Increase output verbosity",
+    "-v", "--verbose", help="Increases verbosity output", action="store_true"
 )
 
-
 """ positional arguments """
+
 
 # Saves output to file in the user's home dir
 parser.add_argument("-s", "--save", help="Save output to file", action="store_true")
@@ -69,7 +66,7 @@ parser.add_argument("-s", "--save", help="Save output to file", action="store_tr
 # Print info to the console
 parser.add_argument("-r", "--route", help="Print routing info", action="store_true")
 
-# Prints the local network interfae name
+# Prints the local network interface name
 parser.add_argument(
     "-n",
     "--name",
@@ -77,33 +74,56 @@ parser.add_argument(
     action="store_true",
 )
 
-args = parser.parse_args()
+# Prints the local network interface hardware address
+parser.add_argument(
+    "-m",
+    "--mac",
+    help="Prints the local network interface hardware address[] MAC]",
+    action="store_true",
+)
 
-if args.verbose:
-    _verbose = True
+# Prints output in a list
+parser.add_argument(
+    "-l",
+    "--list",
+    help="Print output in a list. Defaults to tabular output.",
+    action="store_true",
+)
+
+args = parser.parse_args()
 
 if args.save:
     _save = True
 
+if args.list:
+    _list = True
+
+if args.verbose:
+    _verbose = True
+
 if args.route:
     data = grt()
+
     file_path = "{}{}Documents{}prog-data{}routing_table.txt".format(
         udir, psep, psep, psep
     )
 
-    if _verbose:
-        if _save:
-            _title = "Routing info"
-            c_title = cus(255, 255, 255, _title)
-            print("\t\t{}\n".format(c_title))
-            print("{}\n".format(data))
+    _title = "Local Routing Information"
+    c_title = cus(255, 255, 255, _title)
+    print(" {}\n".format(c_title))
 
+    prt()
+
+    if _save:
+        output_saved = wtf(file_path, data)
+
+        if _verbose:
+            # Save output to file
             _action = "... Saving to file"
             c_action = cus(255, 255, 255, _action)
             print("\t\t{}\n".format(c_action))
-            success = write_dataframe_to_file(file_path, data)
 
-            if success:
+            if output_saved:
                 _action_success = "Info saved to file"
                 c_action_success = cus(90, 255, 90, _action_success)
                 print("\t\t{}\n".format(c_action_success))
@@ -112,42 +132,20 @@ if args.route:
                 c_action_failure = cus(255, 90, 90, _action_failure)
                 print("\t\t{}\n".format(c_action_failure))
         else:
-            _title = "Routing info"
-            c_title = cus(255, 255, 255, _title)
-
-            print("\t\t{}\n".format(c_title))
-            print("{}\n".format(data))
-    else:
-        if _save:
-            # Save output to file
-            success = write_dataframe_to_file(file_path, data)
-
-            _title = "Routing info"
-            c_title = cus(255, 255, 255, _title)
-
-            print("\t\t{}\n".format(c_title))
-            print("{}\n".format(data))
-
-            if not success:
+            if not output_saved:
                 _action_failure = "Error saving to file"
                 c_action_failure = cus(255, 90, 90, _action_failure)
                 print("\n\t\t{}\n".format(c_action_failure))
-        else:
-            _title = "Routing info"
-            c_title = cus(255, 255, 255, _title)
-
-            print("\t\t{}\n".format(c_title))
-            print("{}\n".format(data))
 
 if args.name:
-    data = gnin()
+    data_frame = gnin()
 
     if _verbose:
         _title = "Network Interface Name"
         c_title = cus(255, 255, 255, _title)
 
         print("\t\t{}\n".format(c_title))
-        print("{}\n".format(data))
+        print("{}\n".format(data_frame))
 
         if args.save:
             print("... Saving info to file\n")
@@ -156,9 +154,9 @@ if args.name:
                 udir, psep, psep, psep
             )
 
-            success = wtf(file_path, data)
+            output_saved = wtf(file_path, data_frame)
 
-        if success:
+        if output_saved:
             _action_success = "Successfully saved info the file"
             c_action_success = cus(88, 255, 88, _action_success)
             print("{}\n".format(c_action_success))
@@ -167,7 +165,7 @@ if args.name:
             c_action_failure = cus(255, 90, 90, _action_failure)
             print("\n\t\t{}\n".format(c_action_failure))
     else:
-        c_data = cus(255, 255, 255, data)
+        c_data = cus(255, 255, 255, data_frame)
         print("{}\n".format(c_data))
 
         if args.save:
@@ -175,9 +173,13 @@ if args.name:
                 udir, psep, psep, psep
             )
 
-            success = wtf(file_path, data)
+            output_saved = wtf(file_path, data_frame)
 
-            if not success:
+            if not output_saved:
                 _action_failure = "Error saving to file"
                 c_action_failure = cus(255, 90, 90, _action_failure)
                 print("\n\t\t{}\n".format(c_action_failure))
+
+if args.mac:
+    mac = gniha()
+    print("{}".format(mac))

@@ -6,20 +6,30 @@ import re
 import os
 import sys
 from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
-from custom_modules.PatternConstants import valid_ipv4, valid_network_range, has_ext
+from custom_modules.PatternConstants import (
+    valid_ipv4 as vip4,
+    valid_network_range as vnr,
+    valid_mac as vma,
+    has_ext,
+)
+from custom_modules.TypeTester import arg_is_an_int as aiai
 from custom_modules.PlatformConstants import SEP as psep, USER_DIR as udir
 from custom_modules.FileOperator import write_to_file as wtf
-from custom_modules.LocalConfigParser import (
+from custom_modules.ArpCommander import (
     print_routing_table as prt,
     get_routing_table as grt,
     print_network_interface_name as pnin,
     get_network_interface_name as gnin,
     get_network_interface_hardware_address as gniha,
+    _arp_who_has as awh,
 )
 
-_verbose = False
-_save = False
-_list = False
+_verbose = None
+_timeout = None
+_target = None
+_destination = None
+_save = None
+_list = None
 cus = cms["custom"]
 
 
@@ -59,6 +69,27 @@ group.add_argument(
 
 """ positional arguments """
 
+# Set timeout period in seconds
+parser.add_argument(
+    "-t",
+    "--timeout",
+    type=int,
+    nargs=1,
+    help="Time out periods in seconds before giving up",
+)
+
+# Set the response destination
+parser.add_argument(
+    "-d",
+    "--destination",
+    nargs=1,
+    help="Set the response destination. Works with the arp command",
+)
+
+# Set the target IP or IP range
+parser.add_argument(
+    "--target", nargs=1, help="Sets the target IP or IP range. Works with arp command."
+)
 
 # Saves output to file in the user's home dir
 parser.add_argument("-s", "--save", help="Save output to file", action="store_true")
@@ -83,23 +114,30 @@ parser.add_argument(
 )
 
 # Prints output in a list
-parser.add_argument(
-    "-l",
-    "--list",
-    help="Print output in a list. Defaults to tabular output.",
-    action="store_true",
-)
+parser.add_argument("-a", "--arp", help="Make ARP request", action="store_true")
+
 
 args = parser.parse_args()
 
 if args.save:
     _save = True
 
-if args.list:
-    _list = True
 
 if args.verbose:
     _verbose = True
+
+if args.timeout:
+    if aiai(args.timeout) and args.timeout > 0:
+        _timeout = args.timeout
+
+if args.destination:
+    if vma(args.destination):
+        _destination = args.destination
+
+if args.target:
+    if vip4(args.target) or vnr(args.target):
+        _target = args.target
+
 
 if args.route:
     data = grt()
@@ -137,7 +175,7 @@ if args.route:
                 c_action_failure = cus(255, 90, 90, _action_failure)
                 print("\n\t\t{}\n".format(c_action_failure))
 
-if args.name:
+elif args.name:
     data_frame = gnin()
 
     if _verbose:
@@ -180,6 +218,33 @@ if args.name:
                 c_action_failure = cus(255, 90, 90, _action_failure)
                 print("\n\t\t{}\n".format(c_action_failure))
 
-if args.mac:
+elif args.mac:
     mac = gniha()
     print("{}".format(mac))
+
+elif args.arp:
+    if _verbose:
+        _verbose = 0
+
+    if _timeout:
+        _timeout = 0
+
+    print("\n\tMaking ARP request\n\n")
+    results = awh(_destination, _target, _verbose, _timeout)
+    status = results["status"]
+
+    if status:
+        if _verbose == 0:
+            print(results["msg"])
+
+        clients = results["clients"]
+
+        if len(clients) > 0:
+            for i, c in enumerate(clients, start=1):
+                client = c
+
+                print("{}.\tIP: {}\tMAC: {}".format(i, client["ip"], client["mac"]))
+
+
+else:
+    print("\n" + " " * 55 + "Done!\n\n")

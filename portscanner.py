@@ -5,7 +5,7 @@ import os
 from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
 from custom_modules.PortScanner import is_port_open_thread as ipot
 from custom_modules.NmapPortScanner import is_port_open_thread as nmap
-from custom_modules.LocalConfigParser import return_route
+from custom_modules.LocalConfigParser import get_routing_table as return_route
 from custom_modules.PortScannerResultsHandler import (
     handle_results as handler,
     print_nmap_report as pnr,
@@ -21,7 +21,10 @@ report = None
 port_range = False
 sport = None
 eport = None
-netface, local_addr, host = return_route()
+route_data = return_route()
+netface = route_data["interface"]
+local_addr = route_data["address"]
+host = route_data["gateway"]
 scan_results = ""
 
 desc = "This program scans the given port(s) of the given host"

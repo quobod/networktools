@@ -7,7 +7,17 @@ import re
 def valid_ipv4(address=None):
     if not address == None:
         IPv4 = re.compile(r"([0-9]{1,3}\.){3}([0-9]{1,3})$")
-        matched = re.search(IPv4, address)
+        matched = re.search(IPv4, str(address))
+        return not matched == None
+
+
+""" MAC address """
+
+
+def valid_mac(address=None):
+    if not address == None:
+        IPv4 = re.compile(r"([0-9a-fA-F]{2}\:){5}([0-9a-fA-F]{2})$")
+        matched = re.search(IPv4, str(address))
         return not matched == None
 
 
@@ -17,7 +27,7 @@ def valid_ipv4(address=None):
 def valid_network_range(address=None):
     if not address == None:
         IPv4_network = re.compile(r"([0-9]{1,3}\.){3}([0-9]{1,3})/[1-9]{1,3}$")
-        matched = re.search(IPv4_network, address)
+        matched = re.search(IPv4_network, str(address))
         return not matched == None
 
 

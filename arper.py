@@ -138,9 +138,6 @@ if args.timeout:
 if args.destination[0]:
     dest = args.destination
     valid_dest = vma(str(dest[0]).strip())
-    print(*dest, sep="\n")
-    print("Dest: {}".format(dest[0]))
-    print("{} is Valid? {}".format(dest[0], valid_dest))
 
     if valid_dest == True:
         _destination = args.destination

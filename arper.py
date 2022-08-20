@@ -137,11 +137,34 @@ if args.timeout:
 if args.destination:
     if vma(args.destination):
         _destination = args.destination
+    else:
+        msg = cus(
+            255,
+            255,
+            255,
+            "Destination argument {} must be a valid MAC address. e.g. ##:##:##:##:##:##".format(
+                args.destination
+            ),
+        )
+        msg_head = cus(255, 101, 101, "Error:")
+        err_msg = "{} {}".format(msg_head, msg)
+        raise ValueError(err_msg)
 
 if args.target:
     if vip4(args.target) or vnr(args.target):
         _target = args.target
-
+    else:
+        msg = cus(
+            255,
+            255,
+            255,
+            "Target argument {} must be a valid IP address or IP range. e.g. 10.1.10.1, 192.168.1.1/24".format(
+                args.target
+            ),
+        )
+        msg_head = cus(255, 101, 101, "Error:")
+        err_msg = "{} {}".format(msg_head, msg)
+        raise ValueError(err_msg)
 
 if args.route:
     data = grt()

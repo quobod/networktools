@@ -2,6 +2,7 @@
 
 import argparse
 from ast import arguments
+from logging.config import valid_ident
 import re
 import os
 import sys
@@ -134,8 +135,14 @@ if args.timeout:
     if aiai(args.timeout) and args.timeout > 0:
         _timeout = args.timeout
 
-if args.destination:
-    if vma(args.destination):
+if args.destination[0]:
+    dest = args.destination
+    valid_dest = vma(str(dest[0]).strip())
+    print(*dest, sep="\n")
+    print("Dest: {}".format(dest[0]))
+    print("{} is Valid? {}".format(dest[0], valid_dest))
+
+    if valid_dest == True:
         _destination = args.destination
     else:
         msg = cus(
@@ -151,7 +158,7 @@ if args.destination:
         raise ValueError(err_msg)
 
 if args.target:
-    if vip4(args.target) or vnr(args.target):
+    if vip4(args.target[0].strip()) or vnr(args.target[0].strip()):
         _target = args.target
     else:
         msg = cus(

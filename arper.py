@@ -135,28 +135,29 @@ if args.timeout:
     if aiai(args.timeout) and args.timeout > 0:
         _timeout = args.timeout
 
-if args.destination[0]:
-    dest = args.destination
-    valid_dest = vma(str(dest[0]).strip())
+if args.destination:
+    if args.destination[0]:
+        dest = args.destination
+        valid_dest = vma(str(dest[0]).strip())
 
-    if valid_dest == True:
-        _destination = args.destination
-    else:
-        msg = cus(
-            255,
-            255,
-            255,
-            "Destination argument {} must be a valid MAC address. e.g. ##:##:##:##:##:##".format(
-                args.destination
-            ),
-        )
-        msg_head = cus(255, 101, 101, "Error:")
-        err_msg = "{} {}".format(msg_head, msg)
-        raise ValueError(err_msg)
+        if valid_dest == True:
+            _destination = args.destination[0]
+        else:
+            msg = cus(
+                255,
+                255,
+                255,
+                "Destination argument {} must be a valid MAC address. e.g. ##:##:##:##:##:##".format(
+                    args.destination
+                ),
+            )
+            msg_head = cus(255, 101, 101, "Error:")
+            err_msg = "{} {}".format(msg_head, msg)
+            raise ValueError(err_msg)
 
 if args.target:
     if vip4(args.target[0].strip()) or vnr(args.target[0].strip()):
-        _target = args.target
+        _target = args.target[0]
     else:
         msg = cus(
             255,

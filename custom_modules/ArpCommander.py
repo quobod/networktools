@@ -113,7 +113,7 @@ def _arp_who_has(destination=None, target=None, verbose=None, timeout=None):
 
     if not results == None:
         for sent, recv in results:
-            clients.append({"ip": recv.psrc, "mac": recv.hwsrc})
+            clients.append({"ip": str(recv.psrc), "mac": str(recv.hwsrc)})
 
     if len(clients) > 0:
         return {

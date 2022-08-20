@@ -13,8 +13,12 @@ from custom_modules.PatternConstants import (
     has_ext,
 )
 from custom_modules.TypeTester import arg_is_an_int as aiai
-from custom_modules.PlatformConstants import SEP as psep, USER_DIR as udir
-from custom_modules.FileOperator import write_to_file as wtf
+from custom_modules.PlatformConstants import (
+    SEP as psep,
+    CUR_DIR as cdir,
+    LINE_SEP as lsep,
+)
+from custom_modules.FileOperator import write_to_file as wtf, append_file as af
 from custom_modules.ArpCommander import (
     print_routing_table as prt,
     get_routing_table as grt,
@@ -141,11 +145,7 @@ if args.target:
 
 if args.route:
     data = grt()
-
-    file_path = "{}{}Documents{}prog-data{}routing_table.txt".format(
-        udir, psep, psep, psep
-    )
-
+    file_path = "{}{}{}".format(cdir, psep, "routing-results.txt")
     _title = "Local Routing Information"
     c_title = cus(255, 255, 255, _title)
     print(" {}\n".format(c_title))
@@ -188,10 +188,6 @@ elif args.name:
         if args.save:
             print("... Saving info to file\n")
 
-            file_path = "{}{}Documents{}prog-data{}local-netface-name.txt".format(
-                udir, psep, psep, psep
-            )
-
             output_saved = wtf(file_path, data_frame)
 
         if output_saved:
@@ -207,10 +203,6 @@ elif args.name:
         print("{}\n".format(c_data))
 
         if args.save:
-            file_path = "{}{}Documents{}prog-data{}local-netface-name.txt".format(
-                udir, psep, psep, psep
-            )
-
             output_saved = wtf(file_path, data_frame)
 
             if not output_saved:
@@ -229,13 +221,17 @@ elif args.arp:
     if _timeout:
         _timeout = 0
 
-    print("\n\tMaking ARP request\n\n")
+    items = []
     results = awh(_destination, _target, _verbose, _timeout)
     status = results["status"]
 
     if status:
         if _verbose == 0:
+            print("\n\tMaking ARP request\n\n")
             print(results["msg"])
+            if _save:
+                file_path = "{}{}{}".format(cdir, psep, "arp-results.txt")
+                print("... Saving results to file")
 
         clients = results["clients"]
 
@@ -244,6 +240,12 @@ elif args.arp:
                 client = c
 
                 print("{}.\tIP: {}\tMAC: {}".format(i, client["ip"], client["mac"]))
+            if _save:
+                for c in clients:
+                    client = c
+                    line = "{},{}{}".format(client["ip"], client["mac"], lsep)
+                    items.append(line)
+                af(file_path, items)
 
 
 else:

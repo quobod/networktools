@@ -12,17 +12,20 @@ def delete_file(file_path):
 
 def append_file(file_path, list_data):
     if aial(list_data):
-        if fileExists(file_path) and isFile(file_path):
+        file_exists = fileExists(file_path)
+        is_file = isFile(file_path)
+
+        if file_exists and is_file:
             deleted = delete_file(file_path)
 
             if deleted:
-                with open(file_path, "a") as f:
+                with open(file_path, "a", 2) as f:
                     for d in list_data:
                         f.write(d)
 
                 return fileExists(file_path)
         else:
-            with open(file_path, "a") as f:
+            with open(file_path, "a", 2) as f:
                 for d in list_data:
                     f.write(d)
 

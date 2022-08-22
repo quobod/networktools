@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 
-from Threading import Thread
+# from Threading import Thread
 from custom_modules.NmapPortScanner import is_port_open as ipo
 from custom_modules.TypeTester import arg_is_a_string as aias, arg_is_a_list as aial
 from custom_modules.FileOperator import append_file as af

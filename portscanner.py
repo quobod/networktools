@@ -5,7 +5,7 @@ import os
 from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
 from custom_modules.PortScanner import is_port_open_thread as ipot
 from custom_modules.NmapPortScanner import is_port_open_thread as nmap
-from custom_modules.LocalConfigParser import get_routing_table as return_route
+from custom_modules.ArpCommander import get_routing_table as return_route
 from custom_modules.PortScannerResultsHandler import (
     handle_results as handler,
     print_nmap_report as pnr,

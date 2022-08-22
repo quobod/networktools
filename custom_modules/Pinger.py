@@ -13,11 +13,13 @@ def ping(host_address):
             p.show()
     except SystemExit as se:
         p = None
+        cus = None
         msg = "{}".format(se)
         cmsg = cus(255, 255, 255, msg)
         print("\t{}\n".format(cmsg))
     except KeyboardInterrupt as ki:
         p = None
+        cus = None
         msg = "{}".format(ki)
         cmsg = cus(255, 255, 255, msg)
         print("\t{}\n".format(cmsg))

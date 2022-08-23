@@ -44,7 +44,7 @@ def arg_is_a_function(arg):
 
 
 def arg_is_none(arg):
-    return str(type(arg)) == "<class 'NoneType'>"
+    return str(type(arg)) == "<class 'NoneType'>" or arg == None or len(arg) == 0
 
 
 def arg_is_null(arg):

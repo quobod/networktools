@@ -9,8 +9,20 @@ def ping(host_address):
     cus = cms["custom"]
     try:
         p = sr1(IP(dst=host_address) / ICMP())
+        # print("{}".format(p.show()))
+        p.show()
         if p:
-            p.show()
+            if "IP" in p:
+                ip = p["IP"]
+                print("Hops: {}".format(ip.hops()))
+                print("Source: {}".format(ip.src))
+                print("Dest: {}".format(ip.dst))
+                print("TTL: {}".format(ip.ttl))
+                print("TOS: {}".format(ip.tos))
+                print("Name: {}".format(ip.name))
+                print("Sniffed On: {}".format(ip.sniffed_on))
+                print("Seconds: {}".format(round((ip.time / 1000), 2)))
+
     except SystemExit as se:
         p = None
         cus = None

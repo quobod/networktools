@@ -33,7 +33,14 @@ def pro_mode(iface=None):
     sys.exit(0)
 
 
-modes = {"mon": mon_mode, "man": man_mode, "pro": pro_mode}
+modes = {
+    "mon": mon_mode,
+    "man": man_mode,
+    "pro": pro_mode,
+    "monitor": mon_mode,
+    "manage": man_mode,
+    "promiscuous": pro_mode,
+}
 
 
 def set_mode(iface=None, mode=None):

@@ -61,10 +61,8 @@ def set_mode(iface=None, mode=None):
                 _mode = modes[mode]
                 _mode(iface)
             else:
-                msg = cus(
-                    255, 255, 255, "Expected mode name but received [{}]".format(mode)
-                )
-                e_msg_header = cus("Error:")
+                msg = cus(255, 255, 255, "Expected mode name but received nothing")
+                e_msg_header = cus(255, 100, 100, "Error:")
                 e_msg = "{}\t{}".format(e_msg_header, msg)
                 print("{}".format(e_msg))
         except KeyError as ie:
@@ -78,7 +76,7 @@ def set_mode(iface=None, mode=None):
             print("{}".format(e_msg))
         except Exception as ex:
             msg = cus(255, 255, 255, ex)
-            e_msg_header = cus(255, 190, 190, "Error:")
+            e_msg_header = cus(255, 100, 100, "Error:")
             e_msg = "{}\t{}".format(e_msg_header, msg)
             print("{}".format(e_msg))
     else:

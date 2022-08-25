@@ -9,6 +9,74 @@ global cus
 cus = cms["custom"]
 
 
+def bring_up_iw(iface):
+    x = os.system("sudo iwconfig {} up".format(iface))
+    if x == 0:
+        x = os.system("iwconfig {}".format(iface))
+        s_msg_header = cus(100, 255, 100, "Successfully ")
+        s_msg_body = cus(255, 255, 255, "Brought up {}".format(iface))
+        s_msg = "{}{}".format(s_msg_header, s_msg_body)
+        print("{}".format(s_msg))
+    else:
+        f_msg_header = cus(255, 100, 100, "Failed ")
+        f_msg_body = cus(255, 255, 255, "to bring up {}".format(iface))
+        f_msg = "{}{}".format(f_msg_header, f_msg_body)
+        print("{}".format(f_msg))
+
+
+def bring_down_iw(iface):
+    x = os.system("sudo iwconfig {} down".format(iface))
+    if x == 0:
+        x = os.system("iwconfig {}".format(iface))
+        s_msg_header = cus(100, 255, 100, "Successfully ")
+        s_msg_body = cus(255, 255, 255, "Brought down {}".format(iface))
+        s_msg = "{}{}".format(s_msg_header, s_msg_body)
+        print("{}".format(s_msg))
+    else:
+        f_msg_header = cus(255, 100, 100, "Failed ")
+        f_msg_body = cus(255, 255, 255, "to bring down {}".format(iface))
+        f_msg = "{}{}".format(f_msg_header, f_msg_body)
+        print("{}".format(f_msg))
+
+
+def bring_up_if(iface):
+    x = os.system("sudo ifconfig {} up".format(iface))
+    if x == 0:
+        x = os.system("ifconfig {}".format(iface))
+        s_msg_header = cus(100, 255, 100, "Successfully ")
+        s_msg_body = cus(255, 255, 255, "Brought up {}".format(iface))
+        s_msg = "{}{}".format(s_msg_header, s_msg_body)
+        print("{}".format(s_msg))
+    else:
+        f_msg_header = cus(255, 100, 100, "Failed ")
+        f_msg_body = cus(255, 255, 255, "to bring up {}".format(iface))
+        f_msg = "{}{}".format(f_msg_header, f_msg_body)
+        print("{}".format(f_msg))
+
+
+def bring_down_if(iface):
+    x = os.system("sudo ifconfig {} down".format(iface))
+    if x == 0:
+        x = os.system("ifconfig {}".format(iface))
+        s_msg_header = cus(100, 255, 100, "Successfully ")
+        s_msg_body = cus(255, 255, 255, "Brought down {}".format(iface))
+        s_msg = "{}{}".format(s_msg_header, s_msg_body)
+        print("{}".format(s_msg))
+    else:
+        f_msg_header = cus(255, 100, 100, "Failed ")
+        f_msg_body = cus(255, 255, 255, "to bring down {}".format(iface))
+        f_msg = "{}{}".format(f_msg_header, f_msg_body)
+        print("{}".format(f_msg))
+
+
+uod = {
+    "ifup": bring_up_if,
+    "ifdown": bring_down_if,
+    "iwup": bring_up_iw,
+    "iwdown": bring_down_iw,
+}
+
+
 def mon_mode(iface=None):
     x = os.system("ifconfig {}".format(iface))
 

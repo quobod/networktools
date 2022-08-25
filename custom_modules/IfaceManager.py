@@ -40,6 +40,7 @@ modes = {
     "monitor": mon_mode,
     "manage": man_mode,
     "promiscuous": pro_mode,
+    "prom": pro_mode,
 }
 
 

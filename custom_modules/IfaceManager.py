@@ -10,26 +10,35 @@ cus = cms["custom"]
 
 
 def mon_mode(iface=None):
-    msg = "{} is in Monitor Mode".format(iface)
-    s_msg = cus(190, 255, 190, msg)
+    x = os.system("ifconfig {}".format(iface))
 
-    print(s_msg)
+    if x == 0:
+        msg = "{} is in Monitor Mode\n".format(iface)
+        s_msg = cus(190, 255, 190, msg)
+        print("{}".format(s_msg))
+
     sys.exit(0)
 
 
 def man_mode(iface=None):
-    msg = "{} is in Manage Mode".format(iface)
-    s_msg = cus(190, 255, 190, msg)
+    x = os.system("ifconfig {}".format(iface))
 
-    print(s_msg)
+    if x == 0:
+        msg = "{} is in Manage Mode".format(iface)
+        s_msg = cus(190, 255, 190, msg)
+        print(s_msg)
+
     sys.exit(0)
 
 
 def pro_mode(iface=None):
-    msg = "{} is in Promiscuous Mode".format(iface)
-    s_msg = cus(190, 255, 190, msg)
+    x = os.system("ifconfig {}".format(iface))
 
-    print(s_msg)
+    if x == 0:
+        msg = "{} is in Promiscuous Mode".format(iface)
+        s_msg = cus(190, 255, 190, msg)
+        print(s_msg)
+
     sys.exit(0)
 
 

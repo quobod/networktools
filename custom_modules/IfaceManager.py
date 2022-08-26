@@ -69,11 +69,20 @@ def bring_down_if(iface):
         print("{}".format(f_msg))
 
 
+def check_iface_exist(iface):
+    x = os.sytem("sudo ifconfig {}".format(iface))
+
+    if x == 0:
+        return True
+    return False
+
+
 uod = {
     "ifup": bring_up_if,
     "ifdown": bring_down_if,
     "iwup": bring_up_iw,
     "iwdown": bring_down_iw,
+    "iface": check_iface_exist,
 }
 
 

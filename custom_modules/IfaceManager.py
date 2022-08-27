@@ -70,7 +70,15 @@ def bring_down_if(iface):
 
 
 def check_iface_exist(iface):
-    x = os.sytem("sudo ifconfig {}".format(iface))
+    x = os.system("sudo ifconfig {}".format(iface))
+
+    if x == 0:
+        return True
+    return False
+
+
+def check_iwface_exist(iface):
+    x = os.system("sudo iwconfig {}".format(iface))
 
     if x == 0:
         return True

@@ -50,3 +50,22 @@ def is_port_open_thread(host, port):
     pool = ThreadPool(processes=3)
     async_result = pool.apply_async(is_port_open, (host, port))
     return async_result.get()
+
+
+def scan_network(network):
+    return_list = []
+    nm = nmap.PortScanner()
+    a = nm.scan(hosts=network, arguments="ss")
+
+    for k, v in a["scan"].items():
+        if str(v["status"]["state"]) == "up":
+            try:
+                return_list.append(
+                    [str(v["addresses"]["ipv4"]), str(v["addresses"]["mac"])]
+                )
+            except:
+                pass
+    if len(return_list) > 0:
+        return {"status": True, "data": return_list}
+    else:
+        return {"status": False, "reason": "Failed to detect any hosts"}

@@ -2,9 +2,13 @@
 
 import argparse
 import os
+import sys
 from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
 from custom_modules.PortScanner import is_port_open_thread as ipot
-from custom_modules.NmapPortScanner import is_port_open_thread as nmap
+from custom_modules.NmapPortScanner import (
+    is_port_open_thread as nmap,
+    scan_network as nscanner,
+)
 from custom_modules.ArpCommander import get_routing_table as return_route
 from custom_modules.PortScannerResultsHandler import (
     handle_results as handler,
@@ -12,6 +16,10 @@ from custom_modules.PortScannerResultsHandler import (
     print_report as pr,
 )
 from custom_modules.PlatformConstants import LINE_SEP as lsep
+from custom_modules.PatternConstants import (
+    valid_ipv4 as vip4,
+    valid_network_range as vnr,
+)
 
 cus = cms["custom"]
 msg = None
@@ -99,6 +107,15 @@ parser.add_argument(
 # print results to file
 parser.add_argument(
     "-r", "--report", help="Prints scan results to file", action="store_true"
+)
+
+# scan the host or network using nmap scanner
+parser.add_argument(
+    "-s",
+    "--scan",
+    help="Scan the host/network returns list. Expects ipv4 or network range argument.",
+    nargs=1,
+    dest="scan",
 )
 
 # parse arguments
@@ -248,6 +265,24 @@ def run_default_mode(cus, args):
         pr(data)
 
 
+def print_nscanner_results(cus, results):
+    if not results == None:
+        status = results["status"]
+
+        if status:
+            _data = results["data"]
+            s_msg_header = cus(90, 255, 90, "Success:")
+            s_msg_body = cus(255, 255, 255, "... printing results")
+            s_msg = "{}\t{}".format(s_msg_header, s_msg_body)
+            print("{}".format(s_msg))
+            print(*_data, sep="\n")
+        else:
+            f_msg_header = cus(255, 90, 90, "Failure:")
+            f_msg_body = cus(255, 255, 255, results["reason"])
+            f_msg = "{}\t{}".format(f_msg_header, f_msg_body)
+            print("{}".format(f_msg))
+
+
 # Use Nmap
 if args.nmap:
     if args.addr:
@@ -273,6 +308,25 @@ if args.nmap:
             print("Report Printed")
         else:
             print("Report Error")
+
+# Nmap network scanner
+elif args.scan:
+    network = args.scan[0]
+    network = str(network).strip()
+
+    if vip4(network) or vnr(network):
+        print("Scanning network: {}".format(network))
+        sys.exit(0)
+    else:
+        a_msg_header = cus(255, 90, 90, "Error:")
+        a_msg_body = cus(
+            255,
+            255,
+            255,
+            "{} is not a valid IP address or network range".format(network),
+        )
+        a_msg = "{}\t{}".format(a_msg_header, a_msg_body)
+        print("{}".format(a_msg))
 
 # Quiet mode
 elif args.quiet:

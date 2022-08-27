@@ -34,7 +34,7 @@ def valid_mac(address=None):
 
 def valid_network_range(address=None):
     if not address == None:
-        IPv4_network = re.compile(r"([0-9]{1,3}\.){3}([0-9]{1,3})/[1-9]{1,3}$")
+        IPv4_network = re.compile(r"([0-9]{1,3}\.){3}([0-9]{1,3})\/[1-9]{1,3}$")
         matched = re.search(IPv4_network, str(address))
         return not matched == None
 

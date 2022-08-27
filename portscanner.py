@@ -265,7 +265,7 @@ def run_default_mode(cus, args):
         pr(data)
 
 
-def print_nscanner_results(cus, results):
+def print_nscanner_results(results):
     if not results == None:
         status = results["status"]
 
@@ -314,8 +314,9 @@ elif args.scan:
     network = args.scan[0]
     network = str(network).strip()
 
-    if vip4(network) or vnr(network):
+    if vnr(network):
         print("Scanning network: {}".format(network))
+        results = nscanner(network)
         sys.exit(0)
     else:
         a_msg_header = cus(255, 90, 90, "Error:")
@@ -323,7 +324,9 @@ elif args.scan:
             255,
             255,
             255,
-            "{} is not a valid IP address or network range".format(network),
+            "{} is not a valid network range. Expecting xxx.xxx.xxx.xxx/xx.".format(
+                network
+            ),
         )
         a_msg = "{}\t{}".format(a_msg_header, a_msg_body)
         print("{}".format(a_msg))

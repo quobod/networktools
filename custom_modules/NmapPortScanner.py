@@ -55,6 +55,25 @@ def is_port_open_thread(host, port):
 def scan_network(network):
     return_list = []
     nm = nmap.PortScanner()
+    a = nm.scan(hosts=network, arguments="sn")
+
+    for k, v in a["scan"].items():
+        if str(v["status"]["state"]) == "up":
+            try:
+                return_list.append(
+                    [str(v["addresses"]["ipv4"]), str(v["addresses"]["mac"])]
+                )
+            except:
+                pass
+    if len(return_list) > 0:
+        return {"status": True, "data": return_list}
+    else:
+        return {"status": False, "reason": "Failed to detect any hosts"}
+
+
+def stealth_scan_network(network):
+    return_list = []
+    nm = nmap.PortScanner()
     a = nm.scan(hosts=network, arguments="ss")
 
     for k, v in a["scan"].items():

@@ -16,7 +16,7 @@ def scan_port_range(address, ports, timeout, report, verbose):
 
     for p in ports:
         if verbose:
-            print("Scanning host {} port(s) {}{}".format(address, ports, lsep))
+            print("Scanning host {} port(s) {}".format(address, ports))
 
         port_open = ipot(address, p, verbose, timeout)
 
@@ -41,7 +41,7 @@ def scan_port(address, port, timeout, report, verbose):
     data.append("Scanning host {} port(s) {}{}".format(address, port, lsep))
 
     if verbose:
-        print("Scanning {} port {}{}".format(address, port, lsep))
+        print("Scanning {} port {}".format(address, port))
 
         port_open = ipot(address, port, verbose, timeout)
 

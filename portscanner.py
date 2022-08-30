@@ -29,6 +29,7 @@ from custom_modules.NmapPortScanner import (
     is_port_open_thread as nmap,
     scan_network_thread as nscan,
     stealth_scan_network_thread as snscan,
+    custom_scan_network as cnscan,
 )
 from custom_modules.ArpCommander import get_routing_table as return_route
 
@@ -113,6 +114,18 @@ parser.add_argument(
     "--stealth",
     help="Use Nmap stealth scanning. Expects network address and port(s)",
     nargs=2,
+)
+
+parser.add_argument(
+    "--network",
+    help="Use Nmap port scanning. Expects network address and port(s)",
+    nargs=2,
+)
+
+parser.add_argument(
+    "--custom",
+    help="Use Nmap port scanning. Expects network address, port(s) and Nmap scan argument, e.g. sn, ss O etc.",
+    nargs=3,
 )
 
 # parse arguments
@@ -277,6 +290,73 @@ def run_nmap_stealth_scan_mode():
                 print(reason)
 
 
+def run_nmap_network_scan_mode():
+    address, ports, results, port_range = None, None, None, False
+
+    if args.network:
+        address = args.network[0]
+        ports = args.network[1]
+
+        valid_address = tna(address)
+
+        if valid_address:
+            print("Nmap network scan mode{}".format(lsep))
+
+            tpa(ports)
+
+            port_range = ipr(ports)
+
+            if port_range:
+                print("Ports {}".format(ports))
+            elif inpr(ports):
+                print("Port {}".format(ports))
+
+            results = snscan(address, ports)
+
+            status = results["status"]
+
+            if status:
+                data = results["data"]
+                print(*data, sep="{}".format(lsep))
+            else:
+                reason = results["reason"]
+                print(reason)
+
+
+def run_nmap_custom_network_scan_mode():
+    address, ports, results, port_range = None, None, None, False
+
+    if args.custom:
+        address = args.custom[0]
+        ports = args.custom[1]
+        scan_mode = args.custom[2]
+
+        valid_address = tna(address)
+
+        if valid_address:
+            print("Nmap network scan mode{}".format(lsep))
+
+            tpa(ports)
+
+            port_range = ipr(ports)
+
+            if port_range:
+                print("Ports {}".format(ports))
+            elif inpr(ports):
+                print("Port {}".format(ports))
+
+            results = cnscan(address, ports)
+
+            status = results["status"]
+
+            if status:
+                data = results["data"]
+                print(*data, sep="{}".format(lsep))
+            else:
+                reason = results["reason"]
+                print(reason)
+
+
 if not args.nmap:
     if not args.verbose:
         run_port_scan_default_mode()
@@ -285,5 +365,9 @@ if not args.nmap:
 else:
     if args.stealth:
         run_nmap_stealth_scan_mode()
+    elif args.network:
+        run_nmap_network_scan_mode()
+    elif args.custom:
+        run_nmap_custom_network_scan_mode()
     else:
         run_port_scan_nmap_mode()

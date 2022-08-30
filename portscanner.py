@@ -29,7 +29,7 @@ from custom_modules.NmapPortScanner import (
     is_port_open_thread as nmap,
     scan_network_thread as nscan,
     stealth_scan_network_thread as snscan,
-    custom_scan_network as cnscan,
+    custom_scan_network_thread as cnscan,
 )
 from custom_modules.ArpCommander import get_routing_table as return_route
 

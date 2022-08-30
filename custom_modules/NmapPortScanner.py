@@ -104,3 +104,9 @@ def stealth_scan_network_thread(network, port):
     pool = ThreadPool(processes=1)
     async_results = pool.apply_async(stealth_scan_network, (network, port))
     return async_results.get()
+
+
+def custom_scan_network_thread(network, port, scan_mode):
+    pool = ThreadPool(processes=3)
+    async_results = pool.apply_async(custom_scan_network, (network, port, scan_mode))
+    return async_results.get()

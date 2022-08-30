@@ -201,11 +201,14 @@ def run_port_scan_default_mode():
 
 
 def run_port_scan_nmap_mode():
-    address, port, results = None, None, None
+    address, port, results, report = None, None, None, False
 
-    if args.scan[0]:
+    if args.scan:
         address = args.scan[0]
         valid_address = tna(address)
+
+        if args.report:
+            report = True
 
         if valid_address:
             print("Nmap mode\nScan {}".format(address))
@@ -227,9 +230,6 @@ def run_port_scan_nmap_mode():
                     print("Ports {}".format(ports))
                 elif inpr(ports):
                     print("Port {}".format(ports))
-
-            if args.report:
-                report = True
 
 
 if not args.nmap:

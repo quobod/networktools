@@ -24,14 +24,13 @@ def scan_port_range(address, ports, timeout, report, verbose):
 
         if verbose:
             print("Port {} open? {}{}".format(p, port_open, lsep))
-
-            if report:
-                print("{}Saving {} to file".format(lsep, data))
         else:
             if port_open:
                 print("Port {} is open{}".format(p, lsep))
 
     if report:
+        if verbose:
+            print("{}Saving {} to file".format(lsep, data))
         af(file_path, data)
 
 
@@ -47,9 +46,6 @@ def scan_port(address, port, timeout, report, verbose):
         port_open = ipot(address, port, verbose, timeout)
 
         print("Port {} open? {}{}".format(port, port_open, lsep))
-
-        if report:
-            print("{}Saving {} to file".format(lsep, data))
     else:
         port_open = ipot(address, port, verbose, timeout)
 
@@ -59,4 +55,6 @@ def scan_port(address, port, timeout, report, verbose):
     data.append("Port {} open? {}{}".format(port, port_open, lsep))
 
     if report:
+        if verbose:
+            print("{}Saving {} to file".format(lsep, data))
         af(file_path, data)

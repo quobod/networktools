@@ -37,7 +37,7 @@ def scan_network(network, port):
             except Exception:
                 pass
     if len(return_list) > 0:
-        return {"status": True, "data": return_list}
+        return {"status": True, "data": return_list, "source": a}
     else:
         return {"status": False, "reason": "Failed to detect any hosts"}
 
@@ -59,7 +59,7 @@ def stealth_scan_network(network, port):
             except Exception:
                 pass
     if len(return_list) > 0:
-        return {"status": True, "data": return_list}
+        return {"status": True, "data": return_list, "source": a}
     else:
         return {"status": False, "reason": "Failed to detect any hosts"}
 
@@ -83,7 +83,7 @@ def custom_scan_network(network, port, scan_mode):
             except Exception:
                 pass
     if len(return_list) > 0:
-        return {"status": True, "data": return_list}
+        return {"status": True, "data": return_list, "source": a}
     else:
         return {"status": False, "reason": "Failed to detect any hosts"}
 

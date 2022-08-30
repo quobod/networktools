@@ -1,10 +1,8 @@
 #! /usr/bin/python3
 
+import socket
 from ast import Param
 from multiprocessing.pool import ThreadPool
-import socket
-
-from paramiko import HostKeys  # for connecting
 from .ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
 
 
@@ -16,14 +14,14 @@ def is_port_open(host, port, verbose=False, timeout=None):
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         try:
+            if verbose:
+                print("Connecting to {} on port {}".format(host, port))
+
             s.settimeout(_timeout)
             s.connect((host, port))
             connected = s.connect_ex((host, port))
 
-            if connected == 0:
-                return True
-            else:
-                return False
+            return connected == 0
         except Exception as ex:
             if verbose:
                 line = ""

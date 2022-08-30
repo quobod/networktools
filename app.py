@@ -1,8 +1,10 @@
 #! /usr/bin/python3
 
 import sys
+from custom_modules.PatternConstants import is_a_number as ian, is_port_range as ipr
 from custom_modules.ArgumentManager import filtered as args, filtered_count as argsc
 from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
+from custom_modules.PlatformConstants import SEP as sep, CUR_DIR as cdir
 from custom_modules.IfaceManager import (
     bring_down_if as bd,
     bring_up_if as bu,
@@ -39,4 +41,16 @@ def test_up_down():
             print("network interface named [{}] does not exist".format(arg))
 
 
-test_up_down()
+def test_is_a_number():
+    if argsc > 0:
+        for a in args:
+            print("{} is a number? {}".format(a, ian(a)))
+
+
+def test_is_port_range():
+    if argsc > 0:
+        for a in args:
+            print("{} is a number range? {}".format(a, ipr(a)))
+
+
+print("{}\n{}".format(sep, cdir))

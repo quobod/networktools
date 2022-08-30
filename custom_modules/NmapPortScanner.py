@@ -14,36 +14,48 @@ custom = cms["custom"]
 """
 
 
-def is_port_open(host=None, port=None):
-    nm_scanner = None
+def is_port_open(host, port):
+    nm_scanner = nmap.PortScanner()
+    nm_scanner.scan(str(host), str(port))
+    return nm_scanner
 
-    if not arg_is_a_string(host):
-        msg = "[{}] must be a string, but received a {}".format(host, type(host))
-        cmsg = custom(255, 100, 100, msg)
-        emsg = custom(255, 255, 255, "Invalid Argument: {}".format(host))
-        message = "{}\t{}".format(emsg, cmsg)
 
-        raise ValueError(message)
+def scan_network(network, port):
+    return_list = []
+    nm = nmap.PortScanner()
+    a = nm.scan(hosts=network, ports=str(port), arguments="sn")
 
-    elif not arg_is_a_string(port):
-        msg = "[{}] must be a string, but received a {}".format(port, type(port))
-        cmsg = custom(255, 100, 100, msg)
-        emsg = custom(255, 255, 255, "Invalid Argument: {}".format(port))
-        message = "{}\t{}".format(emsg, cmsg)
-
-        raise ValueError(message)
-
-    elif not host == None and not port == None:
-        nm_scanner = nmap.PortScanner()
-
-        nm_scanner.scan(str(host), str(port))
-
-        return nm_scanner
+    for k, v in a["scan"].items():
+        if str(v["status"]["state"]) == "up":
+            try:
+                return_list.append(
+                    [str(v["addresses"]["ipv4"]), str(v["addresses"]["mac"])]
+                )
+            except:
+                pass
+    if len(return_list) > 0:
+        return {"status": True, "data": return_list}
     else:
-        message = "Expecting host and port arguments but received Host: {} and Port: {}".format(
-            host, port
-        )
-        raise ValueError(message)
+        return {"status": False, "reason": "Failed to detect any hosts"}
+
+
+def stealth_scan_network(network, port):
+    return_list = []
+    nm = nmap.PortScanner()
+    a = nm.scan(hosts=network, ports=str(port), arguments="ss")
+
+    for k, v in a["scan"].items():
+        if str(v["status"]["state"]) == "up":
+            try:
+                return_list.append(
+                    [str(v["addresses"]["ipv4"]), str(v["addresses"]["mac"])]
+                )
+            except:
+                pass
+    if len(return_list) > 0:
+        return {"status": True, "data": return_list}
+    else:
+        return {"status": False, "reason": "Failed to detect any hosts"}
 
 
 def is_port_open_thread(host, port):
@@ -52,39 +64,13 @@ def is_port_open_thread(host, port):
     return async_result.get()
 
 
-def scan_network(network):
-    return_list = []
-    nm = nmap.PortScanner()
-    a = nm.scan(hosts=network, arguments="sn")
-
-    for k, v in a["scan"].items():
-        if str(v["status"]["state"]) == "up":
-            try:
-                return_list.append(
-                    [str(v["addresses"]["ipv4"]), str(v["addresses"]["mac"])]
-                )
-            except:
-                pass
-    if len(return_list) > 0:
-        return {"status": True, "data": return_list}
-    else:
-        return {"status": False, "reason": "Failed to detect any hosts"}
+def scan_network_thread(network, port):
+    pool = ThreadPool(process=1)
+    async_results = pool.apply_async(scan_network, (network, port))
+    return async_results.get()
 
 
-def stealth_scan_network(network):
-    return_list = []
-    nm = nmap.PortScanner()
-    a = nm.scan(hosts=network, arguments="ss")
-
-    for k, v in a["scan"].items():
-        if str(v["status"]["state"]) == "up":
-            try:
-                return_list.append(
-                    [str(v["addresses"]["ipv4"]), str(v["addresses"]["mac"])]
-                )
-            except:
-                pass
-    if len(return_list) > 0:
-        return {"status": True, "data": return_list}
-    else:
-        return {"status": False, "reason": "Failed to detect any hosts"}
+def stealth_scan_network_thread(network, port):
+    pool = ThreadPool(process=1)
+    async_results = pool.apply_async(stealth_scan_network, (network, port))
+    return async_results.get()

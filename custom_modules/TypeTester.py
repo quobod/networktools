@@ -49,3 +49,16 @@ def arg_is_none(arg):
 
 def arg_is_null(arg):
     return arg.empty or arg == None
+
+
+def arg_is_range(arg):
+    if not arg == None:
+        if "-" in arg:
+            arg_split = str(arg).split("-")
+            sport = arg_split[0]
+            eport = arg_split[1]
+
+            if arg_is_an_int(sport) and arg_is_an_int(eport):
+                if sport < eport:
+                    return True
+    return False

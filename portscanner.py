@@ -4,7 +4,7 @@ import argparse
 import os
 import sys
 from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
-from custom_modules.PortScannerResultsHandler import (
+from custom_modules.NmapPortcannerHelpers import (
     handle_results as handler,
     print_nmap_report as pnr,
     print_report as pr,

@@ -23,15 +23,18 @@ def is_port_open(host, port):
 def scan_network(network, port):
     return_list = []
     nm = nmap.PortScanner()
-    a = nm.scan(hosts=network, ports=str(port), arguments="sn")
-
+    a = nm.scan(hosts=network, ports=str(port), arguments="sn", sudo=True)
     for k, v in a["scan"].items():
         if str(v["status"]["state"]) == "up":
             try:
                 return_list.append(
-                    [str(v["addresses"]["ipv4"]), str(v["addresses"]["mac"])]
+                    "{},{},{}".format(
+                        str(v["status"]["state"]),
+                        str(v["addresses"]["ipv4"]),
+                        str(v["addresses"]["mac"]),
+                    )
                 )
-            except:
+            except Exception:
                 pass
     if len(return_list) > 0:
         return {"status": True, "data": return_list}
@@ -43,6 +46,30 @@ def stealth_scan_network(network, port):
     return_list = []
     nm = nmap.PortScanner()
     a = nm.scan(hosts=network, ports=str(port), arguments="ss", sudo=True)
+    for k, v in a["scan"].items():
+        if str(v["status"]["state"]) == "up":
+            try:
+                return_list.append(
+                    "{},{},{}".format(
+                        str(v["status"]["state"]),
+                        str(v["addresses"]["ipv4"]),
+                        str(v["addresses"]["mac"]),
+                    )
+                )
+            except Exception:
+                pass
+    if len(return_list) > 0:
+        return {"status": True, "data": return_list}
+    else:
+        return {"status": False, "reason": "Failed to detect any hosts"}
+
+
+def custom_scan_network(network, port, scan_mode):
+    return_list = []
+    nm = nmap.PortScanner()
+    a = nm.scan(
+        hosts=network, ports=str(port), arguments="{}".format(scan_mode), sudo=True
+    )
     for k, v in a["scan"].items():
         if str(v["status"]["state"]) == "up":
             try:

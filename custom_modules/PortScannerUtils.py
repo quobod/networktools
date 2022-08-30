@@ -22,7 +22,7 @@ invalid_port = "Expected an integer but received "
 invalid_port_range_number = "Expected an integer or a range e.g. 1-33, but received "
 invalid_port_range = "The end range must be larger than the start range"
 empty_network = "Expected a network range but received nothing"
-invalid_network = "Expected a network range - e.g. 10.1.10.1/8 but receiced "
+invalid_network = "Expected a network range - e.g. 10.1.10.1/8 but received "
 
 
 def make_msg_body(words):

@@ -334,7 +334,7 @@ def run_nmap_custom_network_scan_mode():
         valid_address = tna(address)
 
         if valid_address:
-            print("Nmap network scan mode{}".format(lsep))
+            print("Nmap custom network scan mode{}".format(lsep))
 
             tpa(ports)
 
@@ -345,7 +345,7 @@ def run_nmap_custom_network_scan_mode():
             elif inpr(ports):
                 print("Port {}".format(ports))
 
-            results = cnscan(address, ports)
+            results = cnscan(address, ports, scan_mode)
 
             status = results["status"]
 

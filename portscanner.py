@@ -109,6 +109,12 @@ parser.add_argument(
     help="Use Nmap port scanning. Accepts a single address or a range of addresses: e.g. 192.168.1.21, 10.1.10.1/8 or 192.168.1.0/24",
 )
 
+parser.add_argument(
+    "--stealth",
+    help="Use Nmap stealth scanning. Expects network address and port(s)",
+    nargs=2,
+)
+
 # parse arguments
 args = parser.parse_args()
 
@@ -168,7 +174,7 @@ def run_port_scan_default_mode():
     report = False
     verbose = False
 
-    if args.scan[0]:
+    if args.scan:
         address = args.scan[0]
         valid_address = ti4(address)
 
@@ -238,10 +244,46 @@ def run_port_scan_nmap_mode():
                     pnr(results)
 
 
+def run_nmap_stealth_scan_mode():
+    address, ports, results, port_range = None, None, None, False
+
+    if args.stealth:
+        address = args.stealth[0]
+        ports = args.stealth[1]
+
+        valid_address = tna(address)
+
+        if valid_address:
+            print("Nmap stealth scan mode{}".format(lsep))
+
+            tpa(ports)
+
+            port_range = ipr(ports)
+
+            if port_range:
+                print("Ports {}".format(ports))
+            elif inpr(ports):
+                print("Port {}".format(ports))
+
+            results = snscan(address, ports)
+
+            status = results["status"]
+
+            if status:
+                data = results["data"]
+                print(*data, sep="{}".format(lsep))
+            else:
+                reason = results["reason"]
+                print(reason)
+
+
 if not args.nmap:
     if not args.verbose:
         run_port_scan_default_mode()
     else:
         run_port_scan_verbose_mode()
 else:
-    run_port_scan_nmap_mode()
+    if args.stealth:
+        run_nmap_stealth_scan_mode()
+    else:
+        run_port_scan_nmap_mode()

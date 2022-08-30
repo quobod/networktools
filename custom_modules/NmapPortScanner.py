@@ -42,15 +42,18 @@ def scan_network(network, port):
 def stealth_scan_network(network, port):
     return_list = []
     nm = nmap.PortScanner()
-    a = nm.scan(hosts=network, ports=str(port), arguments="ss")
-
+    a = nm.scan(hosts=network, ports=str(port), arguments="ss", sudo=True)
     for k, v in a["scan"].items():
         if str(v["status"]["state"]) == "up":
             try:
                 return_list.append(
-                    [str(v["addresses"]["ipv4"]), str(v["addresses"]["mac"])]
+                    "{},{},{}".format(
+                        str(v["status"]["state"]),
+                        str(v["addresses"]["ipv4"]),
+                        str(v["addresses"]["mac"]),
+                    )
                 )
-            except:
+            except Exception:
                 pass
     if len(return_list) > 0:
         return {"status": True, "data": return_list}
@@ -65,12 +68,12 @@ def is_port_open_thread(host, port):
 
 
 def scan_network_thread(network, port):
-    pool = ThreadPool(process=1)
+    pool = ThreadPool(processes=1)
     async_results = pool.apply_async(scan_network, (network, port))
     return async_results.get()
 
 
 def stealth_scan_network_thread(network, port):
-    pool = ThreadPool(process=1)
+    pool = ThreadPool(processes=1)
     async_results = pool.apply_async(stealth_scan_network, (network, port))
     return async_results.get()

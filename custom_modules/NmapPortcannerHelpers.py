@@ -251,3 +251,107 @@ def print_report(data):
                 report = af("port-scanner-results.txt", collection)
                 return report
     return None
+
+
+def nmap_scan_results_handler(arg):
+    if not arg == None:
+        if "scan" in arg:
+            scan = arg["scan"]
+            _list = []
+
+            for key in scan.keys():
+                item = scan[key]
+
+                hostnames = item["hostnames"]
+                addresses = item["addresses"]
+                vendor = item["vendor"]
+                status = item["status"]
+
+                print("Host {}".format(key))
+                _list.append("Host {}".format(key))
+
+                try:
+                    print(
+                        "Hostname: {}\tType: {}".format(
+                            hostnames[0]["name"], hostnames[0]["type"]
+                        )
+                    )
+
+                    # print(hostnames)
+
+                    print("IP: {}\tMAC: {}".format(addresses["ipv4"], addresses["mac"]))
+                    _list.append(
+                        "IP: {}\tMAC: {}{}".format(
+                            addresses["ipv4"], addresses["mac"], lsep
+                        ),
+                    )
+
+                    # print(addresses)
+
+                    print("Vendor: {}".format(vendor["{}".format(addresses["mac"])]))
+                    _list.append(
+                        "Vendor: {}{}".format(
+                            vendor["{}".format(addresses["mac"])], lsep
+                        ),
+                    )
+
+                    # print(vendor)
+
+                    print(
+                        "Status: {}\tReason: {}".format(
+                            status["state"], status["reason"]
+                        )
+                    )
+                    _list.append(
+                        "Status: {}\tReason: {}{}".format(
+                            status["state"], status["reason"], lsep
+                        )
+                    )
+                except KeyError:
+                    pass
+                # print(status)
+
+                if "tcp" in item:
+                    tcp = item["tcp"]
+
+                    for tcp_key in tcp.keys():
+                        tcp_item = tcp[tcp_key]
+
+                        state = tcp_item["state"]
+                        reason = tcp_item["reason"]
+                        name = tcp_item["name"]
+                        product = tcp_item["product"]
+                        version = tcp_item["version"]
+                        extrainfo = tcp_item["extrainfo"]
+                        conf = tcp_item["conf"]
+                        cpe = tcp_item["cpe"]
+
+                        print("State: {}".format(state))
+                        _list.append("State: {}{}".format(state, lsep))
+
+                        print("Reason: {}".format(reason))
+                        _list.append("Reason: {}{}".format(reason, lsep))
+
+                        print("Name: {}".format(name))
+                        _list.append("Name: {}{}".format(name, lsep))
+
+                        print("Product: {}".format(product))
+                        _list.append("Product: {}{}".format(product, lsep))
+
+                        print("Version: {}".format(version))
+                        _list.append("Version: {}{}".format(version, lsep))
+
+                        print("Extra Info: {}".format(extrainfo))
+                        _list.append("Extra Info: {}{}".format(extrainfo, lsep))
+
+                        print("Conf: {}".format(conf))
+                        _list.append("Conf: {}{}".format(conf, lsep))
+
+                        print("CPE: {}".format(cpe))
+                        _list.append("CPE: {}{}".format(cpe, lsep))
+
+                print("\n")
+                _list.append("{}".format(lsep))
+            return {"status": True, "data": _list}
+
+    return {"status": False}

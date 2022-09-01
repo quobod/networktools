@@ -45,7 +45,7 @@ def scan_network(network, port):
 def stealth_scan_network(network, port):
     return_list = []
     nm = nmap.PortScanner()
-    a = nm.scan(hosts=network, ports=str(port), arguments="ss", sudo=True)
+    a = nm.scan(hosts=network, ports=str(port), arguments="ss")
     for k, v in a["scan"].items():
         if str(v["status"]["state"]) == "up":
             try:

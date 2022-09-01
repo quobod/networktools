@@ -8,6 +8,7 @@ from custom_modules.NmapPortcannerHelpers import (
     handle_results as handler,
     print_nmap_report as pnr,
     print_report as pr,
+    nmap_scan_results_handler as nsrhandler,
 )
 from custom_modules.PlatformConstants import LINE_SEP as lsep
 from custom_modules.PortScannerUtils import (
@@ -267,16 +268,16 @@ def run_nmap_stealth_scan_mode():
         valid_address = tna(address)
 
         if valid_address:
-            print("Nmap stealth scan mode{}".format(lsep))
+            print("Nmap stealth scan mode")
 
             tpa(ports)
 
             port_range = ipr(ports)
 
             if port_range:
-                print("Ports {}".format(ports))
+                print("Address {}{}Ports {}".format(address, lsep, ports))
             elif inpr(ports):
-                print("Port {}".format(ports))
+                print("Address {}{}Port {}".format(address, lsep, ports))
 
             results = snscan(address, ports)
 
@@ -300,16 +301,16 @@ def run_nmap_network_scan_mode():
         valid_address = tna(address)
 
         if valid_address:
-            print("Nmap network scan mode{}".format(lsep))
+            print("Nmap network scan mode")
 
             tpa(ports)
 
             port_range = ipr(ports)
 
             if port_range:
-                print("Ports {}".format(ports))
+                print("Address {}{}Ports {}".format(address, lsep, ports))
             elif inpr(ports):
-                print("Port {}".format(ports))
+                print("Address {}{}Port {}".format(address, lsep, ports))
 
             results = snscan(address, ports)
 
@@ -317,7 +318,19 @@ def run_nmap_network_scan_mode():
 
             if status:
                 data = results["data"]
-                print(*data, sep="{}".format(lsep))
+                _hosts = []
+
+                for d in data:
+                    _hosts.append("{}{}".format(d, lsep))
+
+                print(*_hosts)
+
+                print("\n")
+                _hosts_details_results = nsrhandler(results["source"])
+
+                if _hosts_details_results["status"]:
+                    _details = _hosts_details_results["data"]
+
             else:
                 reason = results["reason"]
                 print(reason)
@@ -334,16 +347,16 @@ def run_nmap_custom_network_scan_mode():
         valid_address = tna(address)
 
         if valid_address:
-            print("Nmap custom network scan mode{}".format(lsep))
+            print("Nmap custom network scan mode")
 
             tpa(ports)
 
             port_range = ipr(ports)
 
             if port_range:
-                print("Ports {}".format(ports))
+                print("Address {}{}Ports {}".format(address, lsep, ports))
             elif inpr(ports):
-                print("Port {}".format(ports))
+                print("Address {}{}Port {}".format(address, lsep, ports))
 
             results = cnscan(address, ports, scan_mode)
 
@@ -351,7 +364,19 @@ def run_nmap_custom_network_scan_mode():
 
             if status:
                 data = results["data"]
-                print(*data, sep="{}".format(lsep))
+                _hosts = []
+
+                for d in data:
+                    _hosts.append("{}{}".format(d, lsep))
+
+                print(*_hosts)
+
+                print("\n")
+                _hosts_details_results = nsrhandler(results["source"])
+
+                if _hosts_details_results["status"]:
+                    _details = _hosts_details_results["data"]
+
             else:
                 reason = results["reason"]
                 print(reason)

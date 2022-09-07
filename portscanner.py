@@ -298,7 +298,9 @@ def run_nmap_mode(args=None):
                 255,
                 255,
                 255,
-                "Expected an IP address or range - e.g. 10.1.10.1, 192.168.1.1/24",
+                "Expected a valid IP address or range but received [{}]. E.g. 10.1.10.1, 192.168.1.1/24.".format(
+                    address
+                ),
             )
             e_msg = "{}{}".format(e_msg_header, e_msg_body)
             print("{}{}".format(e_msg, lsep))

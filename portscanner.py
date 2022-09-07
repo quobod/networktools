@@ -7,6 +7,7 @@ from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
 from custom_modules.NmapPortcannerHelpers import (
     handle_results as handler,
     print_nmap_report as pnr,
+    nmap_scan_results_handler as nsrh,
 )
 from custom_modules.PlatformConstants import LINE_SEP as lsep
 from custom_modules.PortScannerUtils import (
@@ -24,9 +25,7 @@ from custom_modules.PortScannerUtils import (
 )
 from custom_modules.PortScannerHelpers import scan_port_range, scan_port
 from custom_modules.PortScanner import is_port_open_thread as ipot
-from custom_modules.NmapPortScanner import (
-    is_port_open_thread as nmap,
-)
+from custom_modules.NmapPortScanner import is_port_open_thread as nmap, scan_network
 from custom_modules.ArpCommander import get_routing_table as return_route
 
 
@@ -290,6 +289,8 @@ def run_nmap_mode(args=None):
 
                 results = nmap(address, ports)
                 handler(results)
+                # results = scan_network(address, ports)
+                # nsrh(results)
 
                 if args.report:
                     pnr(results)

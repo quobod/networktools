@@ -23,15 +23,12 @@ def is_port_open(host, port):
 
 def scan_network(network, port=None):
     print("Normal Scan\nScanning target: {} port(s): {}".format(network, port))
-    return_list = []
     nm = nmap.PortScanner()
 
     if not port == None:
-        a = nm.scan(network, str(port), arguments="-sn")
+        a = nm.scan(network, str(port), arguments="sn")
     else:
-        a = nm.scan(network, arguments="-sn")
-
-    print("{}".format(dir(nm)))
+        a = nm.scan(network, arguments="sn")
     return nm
 
 

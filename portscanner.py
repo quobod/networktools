@@ -7,8 +7,6 @@ from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
 from custom_modules.NmapPortcannerHelpers import (
     handle_results as handler,
     print_nmap_report as pnr,
-    print_report as pr,
-    nmap_scan_results_handler as nsrhandler,
 )
 from custom_modules.PlatformConstants import LINE_SEP as lsep
 from custom_modules.PortScannerUtils import (
@@ -28,11 +26,94 @@ from custom_modules.PortScannerHelpers import scan_port_range, scan_port
 from custom_modules.PortScanner import is_port_open_thread as ipot
 from custom_modules.NmapPortScanner import (
     is_port_open_thread as nmap,
-    scan_network_thread as nscan,
-    stealth_scan_network_thread as snscan,
-    custom_scan_network_thread as cnscan,
 )
 from custom_modules.ArpCommander import get_routing_table as return_route
+
+
+def exit_prog(exit_code=0):
+    sys.exit(exit_code)
+
+
+def range_verbosely(address, ports, verbose, timeout):
+    mode = cus(100, 255, 100, "Scan Mode")
+    print("{}".format(mode))
+    msg = cus(
+        255,
+        255,
+        255,
+        "Scan parameters: Host: {} Port(s): {} Verbose? {} Timeout: {}".format(
+            address, ports, verbose, timeout
+        ),
+    )
+    print("{}".format(msg))
+    normal = cus(255, 235, 100, lsep)
+    print("{}".format(normal))
+
+    for port in ports:
+        print("Scanning port {}".format(port))
+        open = ipot(address, port, verbose, timeout)
+
+        if open:
+            msg = cus(100, 255, 100, "Port {} is open".format(port))
+            print("{}".format(msg))
+            normal = cus(255, 235, 100, lsep)
+            print("{}".format(normal))
+        else:
+            msg = cus(100, 100, 100, "Port {} is closed".format(port))
+            print("{}".format(msg))
+            normal = cus(255, 235, 100, lsep)
+            print("{}".format(normal))
+
+
+def range_silently(address, ports, verbose, timeout):
+    for port in ports:
+        open = ipot(address, port, verbose, timeout)
+
+        if open:
+            msg = cus(100, 255, 100, "Port {} is open".format(port))
+            print("{}".format(msg))
+            normal = cus(255, 235, 100, lsep)
+            print("{}".format(normal))
+
+
+def run_verbosely(address, ports, verbose, timeout):
+    mode = cus(100, 255, 100, "Scan Mode")
+    print("{}".format(mode))
+    msg = cus(
+        255,
+        255,
+        255,
+        "Scan parameters: Host: {} Port(s): {} Verbose? {} Timeout: {}".format(
+            address, ports, verbose, timeout
+        ),
+    )
+    print("{}".format(msg))
+    normal = cus(255, 235, 100, lsep)
+    print("{}".format(normal))
+
+    open = ipot(address, int(ports), verbose, timeout)
+
+    if open:
+        msg = cus(100, 255, 100, "Port {} is open".format(ports))
+        print("{}{}".format(msg, lsep))
+        normal = cus(255, 235, 100, lsep)
+        print("{}".format(normal))
+    else:
+        msg = cus(100, 100, 100, "Port {} is closed".format(ports))
+        print("{}{}".format(msg, lsep))
+        normal = cus(255, 235, 100, lsep)
+        print("{}".format(normal))
+
+
+def run_silently(address, ports, verbose, timeout):
+    open = ipot(address, int(ports), verbose, timeout)
+
+    if open:
+        msg = cus(100, 255, 100, "Port {} is open".format(ports))
+        print("{}{}".format(msg, lsep))
+        normal = cus(255, 235, 100, lsep)
+        print("{}".format(normal))
+
 
 cus = cms["custom"]
 route_data = return_route()
@@ -42,16 +123,16 @@ gateway = route_data["gateway"]
 
 
 desc = "This program scans the given port(s) of the given host"
-epil = "Scan a port or range of ports. E.g. portscanner --scan <address> --timeout <seconds> --report --ports <n|n-n>."
+epil = "Scan a port or range of ports. E.g. portscanner < [--scan <address> <[--ports <[n|n,n,n|n-n]>]> [--timeout <seconds>] |--nmap <[scan choice]> < --addr <[network|host]> >  [--ports <[n|n,n,n|n-n]>.] ] > [--report]"
 vers = "%prog 0.1"
 
 
 def error_handler(*args):
     cus = cms["custom"]
     arg = args[0]
-    cargs = cus(254, 64, 4, arg)
+    cargs = cus(254, 60, 60, arg)
     print("{}".format(cargs))
-    os.system("exit")
+    exit_prog()
 
 
 parser = argparse.ArgumentParser(description=desc, epilog=epil)
@@ -79,7 +160,7 @@ parser.add_argument(
     "-s",
     "--scan",
     nargs=1,
-    help="Scan host/network. Expects a host address but can accept an address range with -n option. E.g. 10.1.10.1 or 10.1.10.1/8.",
+    help="Scan host/network. Expects a host or network address, e.g. --scan <[10.1.10.1|10.1.10.1/8]>.",
 )
 
 # connection timeout
@@ -87,12 +168,20 @@ parser.add_argument(
     "-t",
     "--timeout",
     nargs=1,
-    help="Set connection time out in seconds, defaults to 10. E.g. -t 0.2 or -t 10.",
+    help="Expects a integer or float, e.g. --timeout <[3|0.8]>. Defaults to 10.",
 )
 
 # print results to file
 parser.add_argument(
-    "-r", "--report", help="Prints scan results to file", action="store_true"
+    "-r", "--report", help="Prints scan results to file.", action="store_true"
+)
+
+# address to scan
+parser.add_argument(
+    "-a",
+    "--addr",
+    help="Expects a host or network address. This argument works with the Nmap option.",
+    nargs=1,
 )
 
 # port or port range
@@ -100,7 +189,7 @@ parser.add_argument(
     "-p",
     "--ports",
     nargs=1,
-    help="Set port or range of ports to scan; e.g. -p 22 or -p 1-1024.",
+    help="Expects a number, comma separated list or a range: e.g. --port <[22|53,80,631,250|1-1024]>.",
 )
 
 # use nmap port scanning
@@ -108,291 +197,109 @@ parser.add_argument(
     "-n",
     "--nmap",
     action="store_true",
-    help="Use Nmap port scanning. Accepts a single address or a range of addresses: e.g. 192.168.1.21, 10.1.10.1/8 or 192.168.1.0/24",
+    help="Nmap scan, works with the --addr parameter.",
 )
 
-parser.add_argument(
-    "--stealth",
-    help="Use Nmap stealth scanning. Expects network address and port(s)",
-    nargs=2,
-)
 
-parser.add_argument(
-    "--network",
-    help="Use Nmap port scanning. Expects network address and port(s)",
-    nargs=2,
-)
+def run_scan_mode():
+    verbose = False
+    timeout = None
 
-parser.add_argument(
-    "--custom",
-    help="Use Nmap port scanning. Expects network address, port(s) and Nmap scan argument, e.g. sn, ss O etc.",
-    nargs=3,
-)
+    address = args.scan[0]
+
+    if ina(address) or iha(address):
+        if args.ports:
+            ports = args.ports[0]
+
+            if ipr(ports):
+                _port_range = mr(ports)
+                status = _port_range["status"]
+
+                if status:
+                    ports = _port_range["data"]
+                    type = _port_range["type"]
+
+                    if args.verbose:
+                        verbose = True
+
+                    if args.timeout:
+                        timeout = args.timeout[0]
+
+                    if verbose:
+                        range_verbosely(address, ports, verbose, timeout)
+                    else:
+                        range_silently(address, ports, verbose, timeout)
+
+                else:
+                    e_msg_header = cus(255, 100, 100, "Error: ")
+                    e_msg_body = cus(255, 255, 255, _port_range["reason"])
+                    e_msg = "{}{}".format(e_msg_header, e_msg_body)
+                    print("{}".format(e_msg))
+            else:
+                if args.verbose:
+                    verbose = True
+
+                if args.timeout:
+                    timeout = args.timeout[0]
+
+                if verbose:
+                    run_verbosely(address, ports, verbose, timeout)
+                else:
+                    run_silently(address, ports, verbose, timeout)
+
+        else:
+            e_msg_header = cus(255, 100, 100, "Error: ")
+            e_msg_body = cus(255, 255, 255, "Missing port(s) option")
+            e_msg = "{}{}".format(e_msg_header, e_msg_body)
+            print("{}".format(e_msg))
+    else:
+        if len(args.scan[0].strip()) == 0:
+            _err = "Expected a valid network or host address but received nothing."
+        else:
+            _err = "Expected a valid network or host address but received [{}]".format(
+                address
+            )
+        e_msg_header = cus(255, 100, 100, "Error: ")
+        e_msg_body = cus(
+            255,
+            255,
+            255,
+            _err,
+        )
+        e_msg = "{}{}".format(e_msg_header, e_msg_body)
+        print("{}".format(e_msg))
+
+    exit_prog()
+
+
+def run_nmap_mode(args=None):
+    mode = cus(100, 255, 100, "Nmap Mode")
+    print("{}".format(mode))
+    normal = cus(255, 235, 100, " ")
+    print("{}".format(normal))
+
+    ports = None
+
+    if args.addr:
+        address = args.addr[0]
+        if args.ports:
+            ports = args.ports[0]
+
+            results = nmap(address, ports)
+            handler(results)
+
+            if args.report:
+                pnr(results)
+
+    exit_prog()
+
 
 # parse arguments
 args = parser.parse_args()
 
-
-def run_port_scan_verbose_mode():
-    address = None
-    timeout = 10
-    ports = None
-    port_range = False
-    report = False
-    verbose = False
-
-    if args.scan[0]:
-        address = args.scan[0]
-        valid_address = ti4(address)
-
-        if args.timeout:
-            valid_timeout = ivt(args.timeout[0])
-
-            if valid_timeout:
-                timeout = args.timeout[0]
-
-        if args.report:
-            report = True
-
-        if args.verbose:
-            verbose = True
-
-        if valid_address:
-
-            if args.ports:
-                ports = args.ports[0]
-                tpa(ports)
-
-                port_range = ipr(ports)
-
-                print("Verbose mode turned on\n")
-                print(
-                    "Host: {} port(s): {} timeout: {} report: {} verbose: {}\n".format(
-                        address, ports, timeout, report, verbose
-                    )
-                )
-
-                if port_range:
-                    ports = mr(ports)
-                    scan_port_range(address, ports, timeout, report, verbose)
-                elif inpr(ports):
-                    ports = int(ports)
-                    scan_port(address, ports, timeout, report, verbose)
-
-
-def run_port_scan_default_mode():
-    address = None
-    timeout = 10
-    ports = None
-    port_range = False
-    report = False
-    verbose = False
-
-    if args.scan:
-        address = args.scan[0]
-        valid_address = ti4(address)
-
-        if args.timeout:
-            valid_timeout = ivt(args.timeout[0])
-
-            if valid_timeout:
-                timeout = args.timeout[0]
-
-        if args.report:
-            report = True
-
-        if args.verbose:
-            verbose = True
-
-        if valid_address:
-
-            if args.ports:
-                ports = args.ports[0]
-                tpa(ports)
-
-                port_range = ipr(ports)
-
-                if port_range:
-                    ports = mr(ports)
-                    scan_port_range(address, ports, timeout, report, verbose)
-                elif inpr(ports):
-                    ports = int(ports)
-                    scan_port(address, ports, timeout, report, verbose)
-
-
-def run_port_scan_nmap_mode():
-    address, ports, results, report = None, None, None, False
-
-    if args.scan:
-        address = args.scan[0]
-        valid_address = tna(address)
-
-        if args.report:
-            report = True
-
-        if valid_address:
-            print("Nmap mode\nScan {}".format(address))
-
-            if args.timeout:
-                valid_timeout = ivt(args.timeout[0])
-
-                if valid_timeout:
-                    timeout = args.timeout[0]
-                    print("Timeout {}".format(timeout))
-
-            if args.ports:
-                ports = args.ports[0]
-                tpa(ports)
-
-                port_range = ipr(ports)
-
-                if port_range:
-                    print("Ports {}".format(ports))
-                elif inpr(ports):
-                    print("Port {}".format(ports))
-
-                results = nmap(address, ports)
-                handler(results)
-
-                if report:
-                    pnr(results)
-
-
-def run_nmap_stealth_scan_mode():
-    address, ports, results, port_range = None, None, None, False
-
-    if args.stealth:
-        address = args.stealth[0]
-        ports = args.stealth[1]
-
-        valid_address = tna(address)
-
-        if valid_address:
-            print("Nmap stealth scan mode")
-
-            tpa(ports)
-
-            port_range = ipr(ports)
-
-            if port_range:
-                print("Address {}{}Ports {}".format(address, lsep, ports))
-            elif inpr(ports):
-                print("Address {}{}Port {}".format(address, lsep, ports))
-
-            results = snscan(address, ports)
-
-            status = results["status"]
-
-            if status:
-                data = results["data"]
-                print(*data, sep="{}".format(lsep))
-            else:
-                reason = results["reason"]
-                print(reason)
-
-
-def run_nmap_network_scan_mode():
-    address, ports, results, port_range = None, None, None, False
-
-    if args.network:
-        address = args.network[0]
-        ports = args.network[1]
-
-        valid_address = tna(address)
-
-        if valid_address:
-            print("Nmap network scan mode")
-
-            tpa(ports)
-
-            port_range = ipr(ports)
-
-            if port_range:
-                print("Address {}{}Ports {}".format(address, lsep, ports))
-            elif inpr(ports):
-                print("Address {}{}Port {}".format(address, lsep, ports))
-
-            results = snscan(address, ports)
-
-            status = results["status"]
-
-            if status:
-                data = results["data"]
-                _hosts = []
-
-                for d in data:
-                    _hosts.append("{}{}".format(d, lsep))
-
-                print(*_hosts)
-
-                print("\n")
-                _hosts_details_results = nsrhandler(results["source"])
-
-                if _hosts_details_results["status"]:
-                    _details = _hosts_details_results["data"]
-
-            else:
-                reason = results["reason"]
-                print(reason)
-
-
-def run_nmap_custom_network_scan_mode():
-    address, ports, results, port_range = None, None, None, False
-
-    if args.custom:
-        address = args.custom[0]
-        ports = args.custom[1]
-        scan_mode = args.custom[2]
-
-        valid_address = tna(address)
-
-        if valid_address:
-            print("Nmap custom network scan mode")
-
-            tpa(ports)
-
-            port_range = ipr(ports)
-
-            if port_range:
-                print("Address {}{}Ports {}".format(address, lsep, ports))
-            elif inpr(ports):
-                print("Address {}{}Port {}".format(address, lsep, ports))
-
-            results = cnscan(address, ports, scan_mode)
-
-            status = results["status"]
-
-            if status:
-                data = results["data"]
-                _hosts = []
-
-                for d in data:
-                    _hosts.append("{}{}".format(d, lsep))
-
-                print(*_hosts)
-
-                print("\n")
-                _hosts_details_results = nsrhandler(results["source"])
-
-                if _hosts_details_results["status"]:
-                    _details = _hosts_details_results["data"]
-
-            else:
-                reason = results["reason"]
-                print(reason)
-
-
-if not args.nmap:
-    if not args.verbose:
-        run_port_scan_default_mode()
-    else:
-        run_port_scan_verbose_mode()
+if args.scan:
+    run_scan_mode()
+elif args.nmap:
+    run_nmap_mode(args)
 else:
-    if args.stealth:
-        run_nmap_stealth_scan_mode()
-    elif args.network:
-        run_nmap_network_scan_mode()
-    elif args.custom:
-        run_nmap_custom_network_scan_mode()
-    else:
-        run_port_scan_nmap_mode()
+    exit_prog()

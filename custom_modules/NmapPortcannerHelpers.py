@@ -9,6 +9,7 @@ from custom_modules.PlatformConstants import LINE_SEP as lsep
 
 
 def handle_results(results):
+    print("Handling results {}".format(results))
     protocols = None
     command = None
     scan_info = None
@@ -44,6 +45,8 @@ def handle_results(results):
         csv = results.csv"""
 
     all_hosts = results.all_hosts()
+
+    print("All hosts {}".format(all_hosts))
 
     for _host in all_hosts:
 
@@ -355,3 +358,9 @@ def nmap_scan_results_handler(arg):
             return {"status": True, "data": _list}
 
     return {"status": False}
+
+
+def scan_handler(results=None):
+    if not results == None:
+        for host in results.all_hosts():
+            print("{}\n".format(host))

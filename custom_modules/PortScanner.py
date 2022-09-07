@@ -15,7 +15,7 @@ def is_port_open(host, port, verbose=False, timeout=None):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         try:
             if verbose:
-                print("Connecting to port {}".format(port))
+                print("Connecting to host {} on port {}".format(host, port))
 
             s.settimeout(_timeout)
             s.connect((host, port))

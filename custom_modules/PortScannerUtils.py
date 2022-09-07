@@ -116,13 +116,13 @@ def test_ipv4(address):
 
 def is_port_range(arg=None):
     if not arg == None:
-        return "-" in arg
+        return ipr(arg)
     return False
 
 
 def is_not_port_range(arg=None):
     if not arg == None:
-        return "-" not in arg and ian(arg)
+        return "-" not in arg and ian(arg) and "," not in arg
     return False
 
 
@@ -146,7 +146,12 @@ def is_valid_timeout(arg=None):
 
 def make_range(arg=None):
     if not arg == None:
-        arg_split = arg.split("-")
-        start = int(arg_split[0])
-        end = int(arg_split[1])
-        return range(start, end, 1)
+        if "-" in arg:
+            arg_dash_split = arg.split("-")
+            start = int(arg_dash_split[0])
+            end = int(arg_dash_split[1])
+            return {"status": True, "type": "range", "data": range(start, end, 1)}
+        elif "," in arg:
+            arg_comma_split = arg.split(",")
+            return {"status": True, "type": "list", "data": arg_comma_split}
+    return {"status": False, "reason": "Invalid argument"}

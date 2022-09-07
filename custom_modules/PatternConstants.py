@@ -76,14 +76,12 @@ def is_a_number(arg=None):
 
 def is_port_range(arg=None):
     if not arg == None:
-        pattern = re.compile(r"^([0-9]+)(\-)([0-9]+)$")
+        pattern = re.compile(r"^(([0-9]+)(\-))([0-9]+)|((\,)([0-9]+))+")
         matched = re.search(pattern, arg)
 
+        # print("Matched: {}".format(matched))
+
         if matched:
-            arg_split = arg.split("-")
-            arg1 = int(arg_split[0])
-            arg2 = int(arg_split[1])
-            valid_arg = arg1 < arg2
-            return not matched == None and valid_arg
+            return not matched == None
 
     return False

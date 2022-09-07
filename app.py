@@ -53,4 +53,6 @@ def test_is_port_range():
             print("{} is a number range? {}".format(a, ipr(a)))
 
 
-print("{}\n{}".format(sep, cdir))
+# print("{}\n{}".format(sep, cdir))
+
+test_is_port_range()

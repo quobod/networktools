@@ -285,7 +285,8 @@ def run_nmap_mode(args=None):
 
         if iha(address) or ina(address):
             if args.ports:
-                ports = args.ports[0]
+                if tpa(args.ports[0]):
+                    ports = args.ports[0]
 
                 results = nmap(address, ports)
                 handler(results)

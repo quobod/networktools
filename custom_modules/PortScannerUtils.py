@@ -18,7 +18,7 @@ network_address_e_msg_header = cus(255, 90, 90, "Network Range Error:")
 empty_host = "Expected a valid IP address but received nothing"
 invalid_host = "Expected an IP address but received "
 empty_port = "Expected either an integer or integer range. e.g. 13 or 44-200 but receiced nothing"
-invalid_port = "Expected an integer but received "
+invalid_port = "Expected an integer but received ["
 invalid_port_range_number = "Expected an integer or a range e.g. 1-33, but received"
 invalid_port_range = "The end range must be larger than the start range"
 empty_network = "Expected a network range but received nothing"
@@ -43,7 +43,7 @@ def test_port_arg(port):
         try:
             port = int(port)
         except ValueError:
-            e_msg_body = make_msg_body("{} {}".format(invalid_port, port))
+            e_msg_body = make_msg_body("{}{}]".format(invalid_port, port))
             e_msg = "{}\t{}".format(port_e_msg_header, e_msg_body)
             print("{}".format(e_msg))
             exit_prog()
@@ -65,7 +65,7 @@ def test_port_arg(port):
 
         except ValueError:
             e_msg_body = make_msg_body("{}{}".format(invalid_port_range_number, port))
-            e_msg = "{}{}".format(port_e_msg_header, e_msg_body)
+            e_msg = "{} {}".format(port_e_msg_header, e_msg_body)
             print("{}".format(e_msg))
             exit_prog()
     return True

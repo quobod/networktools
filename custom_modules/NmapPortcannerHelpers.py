@@ -358,9 +358,3 @@ def nmap_scan_results_handler(arg):
             return {"status": True, "data": _list}
 
     return {"status": False}
-
-
-def scan_handler(results=None):
-    if not results == None:
-        for host in results.all_hosts():
-            print("{}\n".format(host))

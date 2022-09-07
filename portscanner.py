@@ -282,14 +282,26 @@ def run_nmap_mode(args=None):
 
     if args.addr:
         address = args.addr[0]
-        if args.ports:
-            ports = args.ports[0]
 
-            results = nmap(address, ports)
-            handler(results)
+        if iha(address) or ina(address):
+            if args.ports:
+                ports = args.ports[0]
 
-            if args.report:
-                pnr(results)
+                results = nmap(address, ports)
+                handler(results)
+
+                if args.report:
+                    pnr(results)
+        else:
+            e_msg_header = cus(255, 110, 110, "Error: ")
+            e_msg_body = cus(
+                255,
+                255,
+                255,
+                "Expected an IP address or range - e.g. 10.1.10.1, 192.168.1.1/24",
+            )
+            e_msg = "{}{}".format(e_msg_header, e_msg_body)
+            print("{}{}".format(e_msg, lsep))
 
     exit_prog()
 

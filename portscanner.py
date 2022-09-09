@@ -289,8 +289,6 @@ def run_nmap_mode(args=None):
 
                 results = nmap(address, ports)
                 handler(results)
-                # results = scan_network(address, ports)
-                # nsrh(results)
 
                 if args.report:
                     pnr(results)

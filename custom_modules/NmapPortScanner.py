@@ -1,9 +1,7 @@
 import nmap
 from multiprocessing.pool import ThreadPool
 from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
-from custom_modules.TypeTester import (
-    arg_is_a_string,
-)
+from custom_modules.TypeTester import arg_is_a_string, arg_is_an_int as aiai
 
 custom = cms["custom"]
 
@@ -54,8 +52,11 @@ def custom_scan_network(network, port, scan_mode):
         return {"status": False, "reason": "Failed to detect any hosts"}
 
 
-def is_port_open_thread(host, port):
-    pool = ThreadPool(processes=3)
+def is_port_open_thread(host, port, num_proc=None):
+    _processes = 3
+    if aiai(num_proc):
+        _processes = num_proc
+    pool = ThreadPool(processes=_processes)
     async_result = pool.apply_async(is_port_open, (host, port))
     return async_result.get()
 

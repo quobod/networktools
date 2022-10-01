@@ -101,11 +101,11 @@ def time_stamp():
     return "{}:{}:{}".format(hour(), minute(), second())
 
 
-def date_stamp():
+def numbered_date_stamp():
     return "{}/{}/{}".format(year(), nmonth(), nweekday())
 
 
-def date_stamp_f():
+def numbered_date_stamp_f():
     return "{}/{}/{}".format(nweekday(), nmonth(), year())
 
 

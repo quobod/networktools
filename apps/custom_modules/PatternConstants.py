@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 import re
-from custom_modules.TypeTester import arg_is_a_string as aias
+from .TypeTester import arg_is_a_string as aias
 
 
 """ IPv4 address """

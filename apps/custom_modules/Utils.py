@@ -1,57 +1,123 @@
-from custom_modules.PlatformConstants import LINE_SEP as lsep
-from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
-from custom_modules.TypeTester import arg_is_a_dict as aiad, arg_is_a_list as aial
+import sys, os, datetime
+
+from .PlatformConstants import LINE_SEP as lsep, platform as pltf
+from .ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
+from .TypeTester import arg_is_a_dict as aiad, arg_is_a_list as aial
+
+date = datetime.datetime.now()
 
 
-def non_none_value(*args):
-    errors = []
+def exit_prog(exit_code=0):
+    sys.exit(exit_code)
 
-    for a in args:
-        if a == None:
-            errors.append({"{}".format(a): "Nonne"})
-        else:
-            continue
 
-    if len(errors) > 0:
-        return {"status": False, "errors": errors}
+def clear_screen():
+    platform = pltf.platform()
+    if "windows" not in platform and "microsoft" not in platform:
+        os.system("clear")
     else:
-        return {"status": True}
+        os.system("cls")
+    exit_prog()
 
 
-def print_dict_values(_dict=None):
-    if not _dict == None:
-        items = _dict.items()
-
-        for item in items:
-            print("{}\t{}".format(item[0], item[1]))
+def verify_bt():
+    results = os.system("hcitool dev")
+    return results == 0
 
 
-def print_dict_keys(_dict=None):
-    if not _dict == None:
-        keys = _dict.keys()
-
-        print(*keys, sep="\t")
+def am_pm():
+    return date.strftime("%p")
 
 
-def flatten_dict(_dict=None):
-    if not _dict == None and len(_dict) > 0 and aiad(_dict):
-        _string = ""
-        for i, item in enumerate(_dict.items()):
-            if i < (len(_dict.items())):
-                _string += "{}\t{}{}".format(item[0], item[1], lsep)
-            else:
-                _string += "{}\t{}".format(item[0], item[1])
-        return _string
-    return None
+def time_zone():
+    return date.strftime("%Z")
 
 
-def flatten_list(_list=None):
-    if not _list == None and len(_list) > 0 and aial(_list):
-        _string = ""
-        for i, item in enumerate(_list):
-            if i < (len(_list)):
-                _string += "{}\t{}".format(item, lsep)
-            else:
-                _string += "{}\t{}".format(item)
-        return _string
-    return None
+def msecond():
+    return date.strftime("%f")
+
+
+def second():
+    return date.strftime("%S")
+
+
+def minute():
+    return date.strftime("%M")
+
+
+def hour():
+    return date.strftime("%H")
+
+
+def ihour():
+    return date.strftime("%I")
+
+
+def day_of_year():
+    return date.strftime("%j")
+
+
+def day_of_month():
+    return date.strftime("%d")
+
+
+def month():
+    return date.strftime("%B")
+
+
+def smonth():
+    return date.strftime("%b")
+
+
+def nmonth():
+    return date.strftime("%m")
+
+
+def weekday():
+    return date.strftime("%A")
+
+
+def sweekday():
+    return date.strftime("%a")
+
+
+def nweekday():
+    return date.strftime("%w")
+
+
+def year():
+    return date.strftime("%Y")
+
+
+def syear():
+    return date.strftime("%y")
+
+
+def week_of_year():
+    return date.strftime("%U")
+
+
+def time_stamp():
+    return "{}:{}:{}".format(hour(), minute(), second())
+
+
+def date_stamp():
+    return "{}/{}/{}".format(year(), nmonth(), nweekday())
+
+
+def date_stamp_f():
+    return "{}/{}/{}".format(nweekday(), nmonth(), year())
+
+
+def named_date_stamp():
+    return "{}/{}/{}".format(year(), month(), weekday())
+
+
+def named_date_stamp_f():
+    return "{}/{}/{}".format(weekday(), month(), year())
+
+
+def numbered_date_time_stamp():
+    return "{}/{}/{},{}:{}:{}".format(
+        year(), nmonth(), nweekday(), hour(), minute(), second()
+    )

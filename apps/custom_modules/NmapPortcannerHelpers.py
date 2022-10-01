@@ -2,10 +2,10 @@
 
 
 # from Threading import Thread
-from NmapPortScanner import is_port_open as ipo
-from TypeTester import arg_is_a_string as aias, arg_is_a_list as aial
-from FileOperator import append_file as af
-from PlatformConstants import LINE_SEP as lsep
+from .NmapPortScanner import is_port_open as ipo
+from .TypeTester import arg_is_a_string as aias, arg_is_a_list as aial
+from .FileOperator import append_file as af
+from .PlatformConstants import LINE_SEP as lsep
 
 
 def handle_results(results):

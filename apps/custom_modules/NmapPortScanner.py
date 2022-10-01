@@ -1,7 +1,7 @@
 import nmap
 from multiprocessing.pool import ThreadPool
-from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
-from custom_modules.TypeTester import arg_is_a_string, arg_is_an_int as aiai
+from .ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
+from .TypeTester import arg_is_a_string, arg_is_an_int as aiai
 
 custom = cms["custom"]
 

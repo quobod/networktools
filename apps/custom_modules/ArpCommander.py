@@ -1,16 +1,16 @@
 #! /usr/bin/python3
 
 from scapy.all import *
-from custom_modules.PlatformConstants import LINE_SEP as lsep, SEP as sep
-from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
-from custom_modules.TypeTester import (
+from .PlatformConstants import LINE_SEP as lsep, SEP as sep
+from .ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
+from .TypeTester import (
     arg_is_a_dict as aiad,
     arg_is_a_list as aial,
     arg_is_a_tuple as aiat,
     arg_is_a_function as aiaf,
 )
-from custom_modules.Utils import print_dict_values as pdv
-from custom_modules.PatternConstants import valid_ipv4 as vip, valid_mac as vma
+from .Utils import aiad, aial, clear_screen as clear
+from .PatternConstants import valid_ipv4 as vip, valid_mac as vma
 
 cus = cms["custom"]
 

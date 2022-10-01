@@ -110,11 +110,11 @@ def numbered_date_stamp_f():
 
 
 def named_date_stamp():
-    return "{}/{}/{}".format(year(), month(), weekday())
+    return "{}/{}/{}".format(year(), month(), nweekday())
 
 
 def named_date_stamp_f():
-    return "{}/{}/{}".format(weekday(), month(), year())
+    return "{}/{}/{}".format(nweekday(), month(), year())
 
 
 def numbered_date_time_stamp():

@@ -22,6 +22,7 @@ from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
 cus = cms["custom"]
 write_list = "write-list-to-file-test"
 append_list = "append-list-to-file-test"
+default_test_file = "{}{}test-file.txt".format(cdir, sep)
 
 
 def end():
@@ -38,7 +39,7 @@ def make_file_path(name=None):
             name = name.split(".")[0]
         return "{}{}{}.txt".format(cdir, sep, name)
     else:
-        return "{}{}test-file.txt".format(cdir, sep)
+        return default_test_file
 
 
 def test_write_list_to_file():

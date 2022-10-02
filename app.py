@@ -12,10 +12,6 @@ from apps.custom_modules.ArgumentManager import (
 from apps.custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
 from apps.custom_modules.PlatformConstants import SEP as sep, CUR_DIR as cdir
 from apps.custom_modules.FileDialog import open_file as of
-from apps.custom_modules.Utils import (
-    named_date_stamp_f as nameddts,
-    numbered_date_time_stamp as numbereddts,
-)
 
 cus = cms["custom"]
 
@@ -24,7 +20,15 @@ BUFFER_SIZE = 4096  # send 4096 bytes each time step
 
 
 def start():
-    print("{}\n{}\n".format(numbereddts(), nameddts()))
+    file = of()
+
+    if file:
+        with open(file, "r") as f:
+            for line in f.readlines():
+                line_split = line.split(",")
+                ip = line_split[0].strip()
+                mac = line_split[1].strip()
+                print("IP    {}\t\t\tMAC {}".format(ip, mac))
 
 
 def exit_prog(ec=0):

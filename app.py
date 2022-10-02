@@ -33,42 +33,6 @@ def start():
     print("\n")
 
 
-def test_write_list_to_file():
-    nums = [x for x in range(1, 13)]
-    saved = wltf(file_path, nums)
-
-    if saved:
-        s_msg = cus(120, 255, 120, "Success")
-        print("{}\n".format(s_msg))
-    else:
-        f_msg = cus(255, 120, 120, "Failed")
-        print("{}\n".format(f_msg))
-
-
-def test_append_list_to_file():
-    nums = [x for x in range(13, 26)]
-    saved = altf(file_path, nums)
-
-    if saved:
-        s_msg = cus(120, 255, 120, "Success")
-        print("{}\n".format(s_msg))
-    else:
-        f_msg = cus(255, 120, 120, "Failed")
-        print("{}\n".format(f_msg))
-
-
-def read_file():
-    file = of()
-
-    if file:
-        with open(file, "r") as f:
-            for line in f.readlines():
-                line_split = line.split(",")
-                ip = line_split[0].strip()
-                mac = line_split[1].strip()
-                print("IP    {}\t\t\tMAC {}".format(ip, mac))
-
-
 def exit_prog(ec=0):
     sys.exit(ec)
 

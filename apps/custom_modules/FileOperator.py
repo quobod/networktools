@@ -29,6 +29,31 @@ def append_list_to_file(file_path, list_data):
     return None
 
 
+def write_list_to_file(file_path, list_data):
+    if aial(list_data):
+        file_exists = fileExists(file_path)
+        is_file = isFile(file_path)
+
+        if file_exists and is_file:
+            deleted = delete_file(file_path)
+
+            if deleted:
+                with open(file_path, "w", 2) as f:
+                    for d in list_data:
+                        str_d = str(d)
+                        f.write(str_d)
+
+            return fileExists(file_path)
+        else:
+            with open(file_path, "w", 2) as f:
+                for d in list_data:
+                    str_d = str(d)
+                    f.write(str_d)
+
+            return fileExists(file_path)
+    return None
+
+
 def save_new_file(file_path, data=None):
     if not data == None:
         if fileExists(file_path) and isFile(file_path):

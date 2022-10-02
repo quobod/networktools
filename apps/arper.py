@@ -29,6 +29,7 @@ from custom_modules.ArpCommander import (
     get_network_interface_hardware_address as gniha,
     _arp_who_has as awh,
 )
+from custom_modules.Utils import numbered_date_time_stamp as ndts
 
 _verbose = None
 _timeout = None
@@ -37,7 +38,8 @@ _destination = None
 _save = None
 _list = None
 cus = cms["custom"]
-file_path = "{}{}arper-results.txt".format(cdir, psep)
+timestamp = ndts().replace("/", "-").replace(",", "-").replace(":", "-")
+file_path = "{}{}arper-results-{}.txt".format(cdir, psep, timestamp)
 
 
 def error_handler(*args):

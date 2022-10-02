@@ -44,13 +44,13 @@ def make_file_path(name=None):
 def test_write_list_to_file():
     file_path = make_file_path(write_list)
     nums = [x for x in range(1, 13)]
-    return wltf(file_path, nums), file_path
+    return wltf(file_path, nums), file_path, nums
 
 
 def test_append_list_to_file():
     file_path = make_file_path(append_list)
     nums = [x for x in range(13, 26)]
-    return altf(file_path, nums), file_path
+    return altf(file_path, nums), file_path, nums
 
 
 class Tests(unittest.TestCase):
@@ -59,16 +59,18 @@ class Tests(unittest.TestCase):
         end()
 
     def test_write_list_to_file(self):
-        results, file_path = test_write_list_to_file()
+        results, file_path, nums = test_write_list_to_file()
         self.assertTrue(results)
         self.assertTrue(exists(file_path))
         self.assertTrue(isfile(file_path))
+        self.assertEqual(int(sum(nums)), 78)
 
     def test_append_list_to_file(self):
-        results, file_path = test_append_list_to_file()
+        results, file_path, nums = test_append_list_to_file()
         self.assertTrue(results)
         self.assertTrue(exists(file_path))
         self.assertTrue(isfile(file_path))
+        self.assertEqual(int(sum(nums)), 247)
 
 
 if __name__ == "__main__":

@@ -15,7 +15,6 @@ from apps.custom_modules.PlatformConstants import (
     CUR_DIR as cdir,
     PATH_SEP as psep,
 )
-from apps.custom_modules.FileDialog import open_file as of
 from apps.custom_modules.FileOperator import (
     write_list_to_file as wltf,
     append_list_to_file as altf,

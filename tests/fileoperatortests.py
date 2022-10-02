@@ -32,6 +32,9 @@ def end():
     if exists("{}.txt".format(append_list)):
         unlink("{}.txt".format(append_list))
 
+    if exists(default_test_file):
+        unlink(default_test_file)
+
 
 def make_file_path(name=None):
     if name:

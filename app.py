@@ -30,9 +30,7 @@ BUFFER_SIZE = 4096  # send 4096 bytes each time step
 
 
 def start():
-    seps
-    test_write_list_to_file()
-    test_append_list_to_file()
+    print("\n")
 
 
 def test_write_list_to_file():

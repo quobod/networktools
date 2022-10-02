@@ -3,7 +3,10 @@
 import sys, os, socket, tqdm
 from apps.custom_modules.PatternConstants import (
     is_a_number as ian,
-    is_port_range as ipr,
+    is_a_number_or_float as ianof,
+    has_ext as he,
+    valid_ipv4 as is_ipv4,
+    valid_mac as is_mac,
 )
 from apps.custom_modules.ArgumentManager import (
     filtered as args,

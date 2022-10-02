@@ -1,6 +1,7 @@
 import os
 from .FileValidator import fileExists, isFile
 from .TypeTester import arg_is_a_list as aial
+from .PlatformConstants import LINE_SEP as lsep
 
 
 def delete_file(file_path):
@@ -17,13 +18,15 @@ def append_list_to_file(file_path, list_data):
         if file_exists and is_file:
             with open(file_path, "a", 2) as f:
                 for d in list_data:
-                    f.write(d)
+                    str_d = "{}{}".format(str(d), lsep)
+                    f.write(str_d)
 
             return fileExists(file_path)
         else:
             with open(file_path, "a", 2) as f:
                 for d in list_data:
-                    f.write(d)
+                    str_d = "{}{}".format(str(d), lsep)
+                    f.write(str_d)
 
             return fileExists(file_path)
     return None
@@ -40,14 +43,14 @@ def write_list_to_file(file_path, list_data):
             if deleted:
                 with open(file_path, "w", 2) as f:
                     for d in list_data:
-                        str_d = str(d)
+                        str_d = "{}{}".format(str(d), lsep)
                         f.write(str_d)
 
             return fileExists(file_path)
         else:
             with open(file_path, "w", 2) as f:
                 for d in list_data:
-                    str_d = str(d)
+                    str_d = "{}{}".format(str(d), lsep)
                     f.write(str_d)
 
             return fileExists(file_path)

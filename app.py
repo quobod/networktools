@@ -16,23 +16,40 @@ from apps.custom_modules.PlatformConstants import (
     PATH_SEP as psep,
 )
 from apps.custom_modules.FileDialog import open_file as of
-from apps.custom_modules.FileOperator import write_list_to_file as wltf
+from apps.custom_modules.FileOperator import (
+    write_list_to_file as wltf,
+    append_list_to_file as altf,
+)
 
 cus = cms["custom"]
 file_path = "{}{}test-file.txt".format(cdir, sep)
+seps = print("Path Sep: {}\nSep: {}\nCur dir: {}".format(psep, sep, cdir))
 
 SEPARATOR = "<SEPARATOR>"
 BUFFER_SIZE = 4096  # send 4096 bytes each time step
 
 
 def start():
-    # print("Path Sep: {}\nSep: {}\nCur dir: {}".format(psep, sep, cdir))
-    test_f()
+    seps
+    test_write_list_to_file()
+    test_append_list_to_file()
 
 
-def test_f():
+def test_write_list_to_file():
     nums = [x for x in range(1, 13)]
     saved = wltf(file_path, nums)
+
+    if saved:
+        s_msg = cus(120, 255, 120, "Success")
+        print("{}\n".format(s_msg))
+    else:
+        f_msg = cus(255, 120, 120, "Failed")
+        print("{}\n".format(f_msg))
+
+
+def test_append_list_to_file():
+    nums = [x for x in range(13, 26)]
+    saved = altf(file_path, nums)
 
     if saved:
         s_msg = cus(120, 255, 120, "Success")

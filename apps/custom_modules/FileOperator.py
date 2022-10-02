@@ -9,7 +9,7 @@ def delete_file(file_path):
         return not fileExists(file_path)
 
 
-def append_file(file_path, list_data):
+def append_list_to_file(file_path, list_data):
     if aial(list_data):
         file_exists = fileExists(file_path)
         is_file = isFile(file_path)
@@ -58,6 +58,20 @@ def write_to_file(file_path, _data=None):
                 with open(file_path, "w") as f:
                     f.write(_string_data)
 
+        else:
+            with open(file_path, "w") as f:
+                f.write(_string_data)
+
+        return fileExists(file_path)
+
+
+def append_to_file(file_path, _data=None):
+    if not _data == None:
+        _string_data = str(_data)
+
+        if fileExists(file_path):
+            with open(file_path, "a") as f:
+                f.write(_string_data)
         else:
             with open(file_path, "w") as f:
                 f.write(_string_data)

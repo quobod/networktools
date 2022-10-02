@@ -20,7 +20,7 @@ from custom_modules.PlatformConstants import (
     CUR_DIR as cdir,
     LINE_SEP as lsep,
 )
-from custom_modules.FileOperator import write_to_file as wtf, append_file as af
+from custom_modules.FileOperator import write_to_file as wtf, append_list_to_file as af
 from custom_modules.ArpCommander import (
     print_routing_table as prt,
     get_routing_table as grt,

@@ -12,6 +12,6 @@ def exit_prog(exit_code=0):
 
 
 try:
-    spkt({"host": "10.1.0.11", "port": "5447", "flag": "ack"})
+    spkt({"host": "192.168.1.1", "port": "5447", "flag": "ack", "verbose": True})
 except ValueError as ve:
     print(ve)

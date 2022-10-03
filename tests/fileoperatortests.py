@@ -45,16 +45,28 @@ def make_file_path(name=None):
         return default_test_file
 
 
+def dump(file_path=None):
+    if file_path:
+        _list = []
+
+        if exists(file_path):
+            with open(file_path, "r") as f:
+                for line in f.readlines():
+                    _list.append(int(line.strip()))
+            return _list
+    return False
+
+
 def test_write_list_to_file():
     file_path = make_file_path(write_list)
     nums = [x for x in range(1, 13)]
-    return wltf(file_path, nums), file_path, nums
+    return wltf(file_path, nums), file_path
 
 
 def test_append_list_to_file():
     file_path = make_file_path(append_list)
     nums = [x for x in range(13, 26)]
-    return altf(file_path, nums), file_path, nums
+    return altf(file_path, nums), file_path
 
 
 class Tests(unittest.TestCase):
@@ -63,14 +75,16 @@ class Tests(unittest.TestCase):
         end()
 
     def test_write_list_to_file(self):
-        results, file_path, nums = test_write_list_to_file()
+        results, file_path = test_write_list_to_file()
+        nums = dump(file_path)
         self.assertTrue(results)
         self.assertTrue(exists(file_path))
         self.assertTrue(isfile(file_path))
         self.assertEqual(int(sum(nums)), 78)
 
     def test_append_list_to_file(self):
-        results, file_path, nums = test_append_list_to_file()
+        results, file_path = test_append_list_to_file()
+        nums = dump(file_path)
         self.assertTrue(results)
         self.assertTrue(exists(file_path))
         self.assertTrue(isfile(file_path))

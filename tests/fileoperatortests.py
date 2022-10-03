@@ -15,6 +15,7 @@ from custom_modules.PlatformConstants import (
     CUR_DIR as cdir,
     SEP as sep,
     USER_DIR as udir,
+    LINE_SEP as lsep,
 )
 from custom_modules.PatternConstants import has_ext as he
 from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
@@ -23,6 +24,7 @@ cus = cms["custom"]
 write_list = "write-list-to-file-test"
 append_list = "append-list-to-file-test"
 default_test_file = "{}{}test-file.txt".format(cdir, sep)
+new_file = "new-file.txt"
 
 
 def end():
@@ -34,6 +36,9 @@ def end():
 
     if exists(default_test_file):
         unlink(default_test_file)
+
+    if exists(new_file):
+        unlink(new_file)
 
 
 def make_file_path(name=None):
@@ -69,6 +74,15 @@ def test_append_list_to_file():
     return altf(file_path, nums), file_path
 
 
+def test_append_file():
+    with open(new_file, "w") as f:
+        nums = [x for x in range(1, 13)]
+        for n in nums:
+            f.write("{}{}".format(n, lsep))
+    atf(new_file, 1)
+    return new_file
+
+
 class Tests(unittest.TestCase):
     @classmethod
     def tearDownClass(self):
@@ -89,6 +103,13 @@ class Tests(unittest.TestCase):
         self.assertTrue(exists(file_path))
         self.assertTrue(isfile(file_path))
         self.assertEqual(int(sum(nums)), 247)
+
+    def test_append_to_file(self):
+        file_path = test_append_file()
+        nums = dump(file_path)
+        self.assertTrue(exists(file_path))
+        self.assertTrue(isfile(file_path))
+        self.assertEqual(int(sum(nums)), 79)
 
 
 if __name__ == "__main__":

@@ -11,12 +11,14 @@ SYN_ACK_FLAG = "SA"
 D_FIN_FLAG = "DF"
 
 FLAGS = {
-    "s": SYN_FLAG,
-    "a": ACK_FLAG,
-    "r": RST_FLAG,
+    "syn": TCP_SYN_FLAG,
+    "ack": TCP_ACK_FLAG,
+    "rst": TCP_RST_FLAG,
+    "psh": TCP_PSH_FLAG,
+    "urg": TCP_URG_FLAG,
+    "fin": TCP_FIN_FLAG,
     "d": D_FLAG,
-    "f": FIN_FLAG,
-    "df": D_FIN_FLAG,
-    "ar": ACK_RST_FLAG,
-    "sa": SYN_ACK_FLAG,
+    "ackrst": ACK_RST_FLAG,
+    "synack": SYN_ACK_FLAG,
+    "dfin": D_FIN_FLAG,
 }

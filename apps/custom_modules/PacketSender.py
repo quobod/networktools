@@ -2,10 +2,15 @@
 
 import logging
 from scapy.all import *
-from custom_modules.ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
-from custom_modules.Flags import FLAGS as flags
-from custom_modules.PatternConstants import valid_ipv4 as vip4
-from custom_modules.TypeTester import (
+from .ConsoleMessenger import CONSOLE_MESSENGER_SWITCH as cms
+from .Flags import FLAGS as flags
+from .PatternConstants import (
+    valid_ipv4 as vip4,
+    is_a_number as isnum,
+    is_port_range as isportrange,
+    is_a_number_or_float as isnumorfloat,
+)
+from .TypeTester import (
     arg_is_an_int as aiai,
     arg_is_none as ain,
     arg_is_a_dict as aiad,
@@ -21,98 +26,121 @@ logging.basicConfig(filemode="scapy-critical-log", level=logging.CRITICAL)
 
 cus = cms["custom"]
 
+""" Send packet to target 
+    @param host: The target host
+    @param port: The target's port
+    @param flag: The packet flag
+    @param timeout: The number of seconds before giving up
+"""
 
-def send_pkt(host=None, port=None, flag=None, timeout=None):
-    logging.info("Method send_pkt called\n")
+
+def stage_sender(objData=None):
+    logging.info("Method stage_send invoked\n")
     _host = None
     _port = None
     _flag = None
-    _timeout = 10
+    _timeout = None
     _src_port = RandShort()
 
-    if not timeout == None and aiai(timeout):
-        _timeout = timeout
+    """ Validate parameters """
 
-    if not flag == None:
-        try:
-            _flag = flags[flag]
-        except KeyError as ke:
-            msg = "Key [{}] does not exist".format(ke)
-            msg_header = cus(255, 88, 88, "Error:")
-            c_msg = cus(255, 255, 255, msg)
-            error_msg = "{}\t{}".format(msg_header, c_msg)
+    validate_mandatory_parameters(objData)
 
-            raise ValueError(error_msg)
+    _timeout = validate_optional_parameters(objData) or 10
+    _host = objData["host"]
+    _port = objData["port"]
+    _flag = objData["flag"]
 
-    if host == None:
-        msg = "Expected a host address but received [{}]".format(host)
-        msg_header = cus(255, 88, 88, "Error:")
-        c_msg = cus(255, 255, 255, msg)
-        error_msg = "{}\t{}".format(msg_header, c_msg)
-
-        raise ValueError(("{}".format(error_msg)))
-
-    if port == None:
-        msg = "Expected a port number but received [{}]".format(port)
-        msg_header = cus(255, 88, 88, "Error:")
-        c_msg = cus(255, 255, 255, msg)
-        error_msg = "{}\t{}".format(msg_header, c_msg)
-
-        raise ValueError(("{}".format(error_msg)))
-
-    if not vip4(host):
-        msg = "Expected a IPv4 host address but received [{}]".format(host)
-        msg_header = cus(255, 88, 88, "Error:")
-        c_msg = cus(255, 255, 255, msg)
-        error_msg = "{}\t{}".format(msg_header, c_msg)
-
-        raise ValueError(("{}".format(error_msg)))
-
-    if not aiai(port):
-        msg = "Expected a valid integer port number but received [{}]".format(port)
-        msg_header = cus(255, 88, 88, "Error:")
-        c_msg = cus(255, 255, 255, msg)
-        error_msg = "{}\t{}".format(msg_header, c_msg)
-
-        raise ValueError(("{}".format(error_msg)))
-
-    if _flag == None:
-        _flag = flags["s"]
-
-    _host = host
-    _port = port
-
-    tcp_connect_scan_resp = sr1(
-        IP(dst=_host) / TCP(sport=_src_port, dport=_port, flags=_flag),
-        timeout=_timeout,
+    print(
+        "Packet parameters:\n\tHost: {}\n\tPort: {}\n\tFlag: {}\n\tTimeout: {}\n".format(
+            _host, _port, _flag, _timeout
+        )
     )
 
-    if ain(tcp_connect_scan_resp):
-        print("Closed")
 
-    elif not ain(tcp_connect_scan_resp):
-        print("\n\n{}\n\n".format(tcp_connect_scan_resp))
+def validate_optional_parameters(objData):
+    if "timeout" in objData:
+        timeout = objData["timeout"]
+        if isnumorfloat(timeout):
+            return timeout
+    return None
 
-        # if tcp_connect_scan_resp.getlayer(IP):
-        # print("IP Layer: {}".format(tcp_connect_scan_resp.getlayer(IP)))
 
-        if tcp_connect_scan_resp.haslayer(TCP):
-            # print("TCP Layer: {}".format(tcp_connect_scan_resp.getlayer(TCP)))
+def validate_mandatory_parameters(objData):
+    if objData == None:
+        e_msg_header = cus(255, 112, 112, "Error")
+        e_msg_body = cus(255, 255, 255, "Expecting a dict but received nothing")
+        e_msg = "{} {}".format(e_msg_header, e_msg_body)
+        raise ValueError(e_msg)
 
-            if tcp_connect_scan_resp.getlayer(TCP).flags == 0x12:
-                print("TCP Flags: {}".format(tcp_connect_scan_resp.getlayer(TCP).flags))
+    if "host" not in objData:
+        e_msg_header = cus(255, 112, 112, "Error")
+        e_msg_body = cus(
+            255,
+            255,
+            255,
+            "Expected a host key in the dict parameter but received nothing",
+        )
+        e_msg = "{} {}".format(e_msg_header, e_msg_body)
+        raise ValueError(e_msg)
 
-                send_rst = sr(
-                    IP(dst=_host) / TCP(sport=_src_port, dport=_port, flags="AR"),
-                    timeout=_timeout,
-                )
+    host = objData["host"]
 
-                print(send_rst)
+    if not vip4(host):
+        e_msg_header = cus(255, 112, 112, "Error")
+        e_msg_body = cus(
+            255,
+            255,
+            255,
+            "Expected a valid IPv4 host address but received [{}]".format(host),
+        )
+        e_msg = "{} {}".format(e_msg_header, e_msg_body)
+        raise ValueError(e_msg)
 
-                print("Port {} is open".format(_port))
-                return True
-            elif tcp_connect_scan_resp.getlayer(TCP).flags == 0x14:
-                print("Port {} is closed off".format(_port))
-            else:
-                print("Port {} is closed".format(_port))
-    return False
+    if "port" not in objData:
+        e_msg_header = cus(255, 112, 112, "Error")
+        e_msg_body = cus(
+            255,
+            255,
+            255,
+            "Expected a port key in the dict parameter but received nothing",
+        )
+        e_msg = "{} {}".format(e_msg_header, e_msg_body)
+        raise ValueError(e_msg)
+
+    port = objData["port"]
+
+    if not isnum(port):
+        e_msg_header = cus(255, 112, 112, "Error")
+        e_msg_body = cus(
+            255,
+            255,
+            255,
+            "Expected a valid port number but received [{}]".format(port),
+        )
+        e_msg = "{} {}".format(e_msg_header, e_msg_body)
+        raise ValueError(e_msg)
+
+    if "flag" not in objData:
+        e_msg_header = cus(255, 112, 112, "Error")
+        e_msg_body = cus(
+            255,
+            255,
+            255,
+            "Expected a flag key in the dict parameter but received nothing",
+        )
+        e_msg = "{} {}".format(e_msg_header, e_msg_body)
+        raise ValueError(e_msg)
+
+    flag = objData["flag"]
+
+    if flag not in flags:
+        e_msg_header = cus(255, 112, 112, "Error")
+        e_msg_body = cus(
+            255,
+            255,
+            255,
+            "Expected a valid flag but [{}] is not available".format(flag),
+        )
+        e_msg = "{} {}".format(e_msg_header, e_msg_body)
+        raise ValueError(e_msg)
